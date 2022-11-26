@@ -31,3 +31,4 @@ appveyor UpdateBuild -Version $nextversion
 appveyor AddMessage "Version = $nextversion"
 
 dotnet restore
+dotnet workload restore
