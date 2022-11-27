@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>net7.0;net7.0-android;net7.0-ios;net7.0-maccatalyst</TargetFrameworks>
@@ -18,10 +18,18 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Folder Include="Extensions\" />
-	  <Folder Include="Models\" />
-	  <Folder Include="Options\" />
-	  <Folder Include="Services\" />
+		<Folder Include="Options\" />
+		<Folder Include="Platforms\Android\" />
+		<Folder Include="Platforms\iOS\" />
+		<Folder Include="Platforms\MacCatalyst\" />
+		<Folder Include="Platforms\Tizen\" />
+		<Folder Include="Platforms\Windows\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="IdentityModel.OidcClient" Version="5.1.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
 	</ItemGroup>
 
 </Project>
