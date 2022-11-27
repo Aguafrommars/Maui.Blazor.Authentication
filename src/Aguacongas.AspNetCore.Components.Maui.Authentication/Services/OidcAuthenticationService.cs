@@ -227,9 +227,12 @@ public class OidcAuthenticationService<TRemoteAuthenticationState> :
             await _store.SetAsync(scope, entity).ConfigureAwait(false);
             _authenticationCache[scope] = entity;
 
-            var defaultEntity = await GetOrAddAuthenticationFromCache(_oidcClient.Options.Scope).ConfigureAwait(false);
-            defaultEntity.RefreshToken = entity.RefreshToken;
-            await _store.SetAsync(_oidcClient.Options.Scope, defaultEntity).ConfigureAwait(false);
+            if (scope != _oidcClient.Options.Scope)
+            {
+                var defaultEntity = await GetOrAddAuthenticationFromCache(_oidcClient.Options.Scope).ConfigureAwait(false);
+                defaultEntity.RefreshToken = entity.RefreshToken;
+                await _store.SetAsync(_oidcClient.Options.Scope, defaultEntity).ConfigureAwait(false);
+            }
 
             return entity;
         }

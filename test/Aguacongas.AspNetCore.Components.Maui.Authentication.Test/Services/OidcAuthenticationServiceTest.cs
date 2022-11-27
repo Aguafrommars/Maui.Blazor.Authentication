@@ -152,7 +152,7 @@ public class OidcAuthenticationServiceTest
                             }),
                             "https://exemple.com/connect/token" => Task.FromResult(new HttpResponseMessage
                             {
-                                Content = new StringContent(File.ReadAllText("token.json"))
+                                Content = new StringContent(File.ReadAllText("expired-token.json"))
                             }),
                             "https://exemple.com/connect/userinfo" => Task.FromResult(new HttpResponseMessage
                             {
@@ -170,6 +170,7 @@ public class OidcAuthenticationServiceTest
 
         });
         var sut = new OidcAuthenticationService<RemoteAuthenticationState>(oidcClient, storeMock.Object, new FakeNavigationManager(), snapshotMock.Object);
+        await sut.SignInAsync(new RemoteAuthenticationContext<RemoteAuthenticationState>());
 
         var state = await sut.GetAuthenticationStateAsync();
         Assert.NotNull(state.User.Identity);
