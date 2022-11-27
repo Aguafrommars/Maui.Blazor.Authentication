@@ -1,6 +1,7 @@
 ﻿using Aguacongas.AspNetCore.Components.Maui.Authentication.Abstraction;
 using Aguacongas.AspNetCore.Components.Maui.Authentication.Models;
 using Aguacongas.AspNetCore.Components.Maui.Authentication.Services;
+using Aguacongas.AspNetCore.Components.Maui.Authentication.Test.Utils;
 using IdentityModel.Client;
 using IdentityModel.OidcClient;
 using IdentityModel.OidcClient.Browser;
@@ -8,13 +9,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.Extensions.Options;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using static IdentityModel.ClaimComparer;
+using IBrowser = IdentityModel.OidcClient.Browser.IBrowser;
 
 namespace Aguacongas.AspNetCore.Components.Maui.Authentication.Test.Services;
 
@@ -88,7 +83,7 @@ public class OidcAuthenticationServiceTest
         snapshotMock.Setup(m => m.Get(It.IsAny<string>())).Returns(new RemoteAuthenticationOptions<OidcProviderOptions>
         {
 
-        }); 
+        });
         var sut = new OidcAuthenticationService<RemoteAuthenticationState>(oidcClient, storeMock.Object, new FakeNavigationManager(), snapshotMock.Object);
 
         var stateBeforeLogin = await sut.GetAuthenticationStateAsync();
@@ -402,17 +397,5 @@ public class OidcAuthenticationServiceTest
                 ["session_state"] = "F8Qy-cRhrMwSZUVFel4_naUkx6mHilfp0JoU0mtWdto.4D291D31B765485F0FC7151A09211010",
                 ["iss"] = "https://exemple.com"
             }));
-    }
-
-    class FakeHttpMessageHandler : HttpMessageHandler
-    {
-        public Func<HttpRequestMessage, Task<HttpResponseMessage>> Func { get; set; }
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        => Func(request);
-    }
-
-    class FakeNavigationManager : NavigationManager
-    {
-
     }
 }

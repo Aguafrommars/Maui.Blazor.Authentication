@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Http;
 using Microsoft.Extensions.Options;
 using System.Diagnostics.CodeAnalysis;
-using System.Net.Http;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -69,6 +68,8 @@ public static class ServiceCollectionExtensions
     {
         services.TryAddScoped<AuthenticationStateProvider, OidcAuthenticationService<TRemoteAuthenticationState>>();
         services.TryAddTransient<IAuthenticationStore, AuthenticationStore>();
+        services.TryAddScoped(sp => WebAuthenticator.Default);
+        services.TryAddScoped(sp => SecureStorage.Default);
         services.TryAddScoped(sp =>
         {
             var settings = sp.GetRequiredService<IOptions<RemoteAuthenticationOptions<OidcProviderOptions>>>().Value;
@@ -76,7 +77,7 @@ public static class ServiceCollectionExtensions
             var options = new OidcClientOptions
             {
                 Authority = providerOptions.Authority,
-                Browser = new WebBrowserAuthenticator(),
+                Browser = new WebBrowserAuthenticator(sp.GetRequiredService<IWebAuthenticator>()),
                 ClientId = providerOptions.ClientId,
                 Scope = string.Join(" ", providerOptions.DefaultScopes),
                 RedirectUri = providerOptions.RedirectUri,

@@ -6,11 +6,18 @@ namespace Aguacongas.AspNetCore.Components.Maui.Authentication.Services;
 
 public class WebBrowserAuthenticator : IBrowser
 {
+    private readonly IWebAuthenticator _authenticator;
+
+    public WebBrowserAuthenticator(IWebAuthenticator authenticator)
+    {
+        _authenticator = authenticator;
+    }
+
     public async Task<BrowserResult> InvokeAsync(BrowserOptions options, CancellationToken cancellationToken = default)
     {
         try
         {
-            var result = await WebAuthenticator.AuthenticateAsync(new WebAuthenticatorOptions
+            var result = await _authenticator.AuthenticateAsync(new WebAuthenticatorOptions
             {
                 Url = new Uri(options.StartUrl),
                 CallbackUrl = new Uri(options.EndUrl),
