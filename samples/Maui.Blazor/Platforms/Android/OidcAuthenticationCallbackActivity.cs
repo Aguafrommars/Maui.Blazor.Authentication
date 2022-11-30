@@ -17,5 +17,6 @@ namespace Maui.Blazor.Platforms.Android;
               })]
 public class OidcAuthenticationCallbackActivity : WebAuthenticatorCallbackActivity
 {
-    const string CALLBACK_SCHEME = "samplemauiblazor";
+    const string CALLBACK_SCHEME = "mauiblazorsample";
 }
+    

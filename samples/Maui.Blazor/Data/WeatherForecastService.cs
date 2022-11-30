@@ -1,20 +1,31 @@
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
+using Shared;
+using System.Net.Http.Json;
+
 namespace Maui.Blazor.Data;
 
 public class WeatherForecastService
 {
-	private static readonly string[] Summaries = new[]
-	{
-		"Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-	};
+    private readonly HttpClient _http;
 
-	public Task<WeatherForecast[]> GetForecastAsync(DateTime startDate)
+    public WeatherForecastService(IHttpClientFactory httpClientFactory)
 	{
-		return Task.FromResult(Enumerable.Range(1, 5).Select(index => new WeatherForecast
-		{
-			Date = startDate.AddDays(index),
-			TemperatureC = Random.Shared.Next(-20, 55),
-			Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-		}).ToArray());
-	}
+        _http = httpClientFactory.CreateClient(nameof(WeatherForecastService));
+    }
+
+    public async Task<WeatherForecast[]> GetForecastAsync()
+	{
+        try
+        {
+            return await _http.GetFromJsonAsync<WeatherForecast[]>("api/WeatherForecast")
+                .ConfigureAwait(false);
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+
+        return null;
+    }
 }
 

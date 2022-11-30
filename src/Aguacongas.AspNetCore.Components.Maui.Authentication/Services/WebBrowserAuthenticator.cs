@@ -24,9 +24,12 @@ public class WebBrowserAuthenticator : IBrowser
                 PrefersEphemeralWebBrowserSession = true
             }).ConfigureAwait(false);
 
+#if WINDOWS
+            var url = ToRawIdentityUrl(options.EndUrl, result);
+#else
             var url = new RequestUrl(options.EndUrl)
                 .Create(new Parameters(result.Properties));
-
+#endif
             return new BrowserResult
             {
                 Response = url,
@@ -42,4 +45,27 @@ public class WebBrowserAuthenticator : IBrowser
             };
         }
     }
+
+#if WINDOWS
+    private static string ToRawIdentityUrl(string redirectUrl, WebAuthenticatorResult result)
+    {
+        var parameters = result.Properties.Select(pair => $"{pair.Key}={pair.Value}");
+        var modifiedParameters = parameters.ToList();
+
+        var stateParameter = modifiedParameters
+            .FirstOrDefault(p => p.StartsWith("state", StringComparison.OrdinalIgnoreCase));
+
+        if (!string.IsNullOrWhiteSpace(stateParameter))
+        {
+            // Remove the state key added by WebAuthenticator that includes appInstanceId
+            modifiedParameters = modifiedParameters.Where(p => !p.StartsWith("state", StringComparison.OrdinalIgnoreCase)).ToList();
+
+            stateParameter = System.Web.HttpUtility.UrlDecode(stateParameter).Split('&').Last();
+            modifiedParameters.Add(stateParameter);
+        }
+        var values = string.Join("&", modifiedParameters);
+     
+        return $"{redirectUrl}#{values}";
+    }
+#endif
 }

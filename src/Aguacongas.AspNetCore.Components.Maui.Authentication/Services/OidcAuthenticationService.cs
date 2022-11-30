@@ -129,7 +129,8 @@ public class OidcAuthenticationService<TRemoteAuthenticationState> :
 
     public async Task<RemoteAuthenticationResult<TRemoteAuthenticationState>> SignOutAsync(RemoteAuthenticationContext<TRemoteAuthenticationState> context)
     {
-        await _oidcClient.LogoutAsync().ConfigureAwait(false);
+        await Task.Factory.StartNew(() => _oidcClient.LogoutAsync());
+
         foreach (var key in _authenticationCache.Keys)
         {
             _store.Delete(key);
@@ -200,11 +201,13 @@ public class OidcAuthenticationService<TRemoteAuthenticationState> :
 
     private async Task<AuthenticationEntity> RefreshTokenAsync(string scope, AuthenticationEntity entity)
     {
-        if (string.IsNullOrEmpty(entity?.RefreshToken))
+        var defaultEntity = await GetOrAddAuthenticationFromCache(_oidcClient.Options.Scope).ConfigureAwait(false);
+        if (string.IsNullOrEmpty(defaultEntity?.RefreshToken))
         {
             return null;
         }
 
+        await _oidcClient.PrepareLoginAsync().ConfigureAwait(false);
         var options = _oidcClient.Options;
         var client = options.HttpClientFactory(options);
         var result = await client.RequestRefreshTokenAsync(new RefreshTokenRequest
@@ -214,7 +217,7 @@ public class OidcAuthenticationService<TRemoteAuthenticationState> :
             ClientSecret = options.ClientSecret,
             ClientAssertion = options.ClientAssertion,
             ClientCredentialStyle = options.TokenClientCredentialStyle,
-            RefreshToken = entity.RefreshToken,
+            RefreshToken = defaultEntity.RefreshToken,
             Scope = scope
         }).ConfigureAwait(false);
 
@@ -227,9 +230,8 @@ public class OidcAuthenticationService<TRemoteAuthenticationState> :
             await _store.SetAsync(scope, entity).ConfigureAwait(false);
             _authenticationCache[scope] = entity;
 
-            if (scope != _oidcClient.Options.Scope)
+            if (entity != defaultEntity)
             {
-                var defaultEntity = await GetOrAddAuthenticationFromCache(_oidcClient.Options.Scope).ConfigureAwait(false);
                 defaultEntity.RefreshToken = entity.RefreshToken;
                 await _store.SetAsync(_oidcClient.Options.Scope, defaultEntity).ConfigureAwait(false);
             }

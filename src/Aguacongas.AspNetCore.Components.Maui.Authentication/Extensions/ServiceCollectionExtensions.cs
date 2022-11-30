@@ -68,7 +68,12 @@ public static class ServiceCollectionExtensions
     {
         services.TryAddScoped<AuthenticationStateProvider, OidcAuthenticationService<TRemoteAuthenticationState>>();
         services.TryAddTransient<IAuthenticationStore, AuthenticationStore>();
+#if WINDOWS
+	    services.AddScoped<IWebAuthenticator>(p => WinUIEx.WebAuthenticator.Instance);
+#else
         services.TryAddScoped(sp => WebAuthenticator.Default);
+#endif
+
         services.TryAddScoped(sp => SecureStorage.Default);
         services.TryAddScoped(sp =>
         {
