@@ -45,7 +45,9 @@ public static class Config
                 PostLogoutRedirectUris = { "mauiblazorsample://authentication/logout-callback" },
 
                 AllowOfflineAccess = true,
-                AllowedScopes = { "openid", "profile", "scope1" }
+                AllowedScopes = { "openid", "profile", "scope1" },
+                
+                UpdateAccessTokenClaimsOnRefresh = true,
             },
         };
 }
