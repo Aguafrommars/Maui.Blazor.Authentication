@@ -1,5 +1,4 @@
 using Duende.IdentityServer.Configuration;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Serilog;
 
@@ -38,6 +37,11 @@ internal static class HostingExtensions
             {
                 options.Authority = "https://localhost:5001";
                 options.Audience = "api";
+                options.TokenValidationParameters.ValidIssuers = new[]
+                {
+                    "https://localhost:5001",
+                    "https://10.0.2.2:5001"
+                };
             });
 
         return builder.Build();

@@ -33,21 +33,21 @@ public static class Config
         new Client[]
         {
             // Maui Blazor sample
-            new Client
-            {
-                ClientId = "mauiblazorsample",
-                RequirePkce = true,
-                RequireClientSecret = false,
+new Client
+{
+    ClientId = "mauiblazorsample",
+    RequirePkce = true,
+    RequireClientSecret = false,
 
-                AllowedGrantTypes = GrantTypes.Code,
+    AllowedGrantTypes = GrantTypes.Code,
 
-                RedirectUris = { "mauiblazorsample://authentication/login-callback" },
-                PostLogoutRedirectUris = { "mauiblazorsample://authentication/logout-callback" },
+    RedirectUris = { "mauiblazorsample://authentication/login-callback" },
+    PostLogoutRedirectUris = { "mauiblazorsample://authentication/logout-callback" },
 
-                AllowOfflineAccess = true,
-                AllowedScopes = { "openid", "profile", "scope1" },
+    AllowOfflineAccess = true,
+    AllowedScopes = { "openid", "profile", "scope1" },
                 
-                UpdateAccessTokenClaimsOnRefresh = true,
-            },
+    UpdateAccessTokenClaimsOnRefresh = true,
+},
         };
 }

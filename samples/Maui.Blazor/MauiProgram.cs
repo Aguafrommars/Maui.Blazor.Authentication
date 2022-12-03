@@ -37,6 +37,7 @@ public static class MauiProgram
 				providerOptions.RedirectUri = "mauiblazorsample://authentication/login-callback";
 				providerOptions.PostLogoutRedirectUri = "mauiblazorsample://authentication/logout-callback";
 				providerOptions.DefaultScopes.Add("offline_access");
+                providerOptions.DefaultScopes.Add("scope1");
             }, ConfigureHttpMessgeBuilder);
 
 		services.AddSingleton<WeatherForecastService>()
@@ -50,7 +51,7 @@ public static class MauiProgram
                     authorityUrl
                 }, new[]
 				{
-                    "openid scope1"
+                    "scope1"
                 });
 				return handler;
             })
