@@ -5,19 +5,19 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{AB74CCBD-1775-4ED4-971A-F2DD4578350D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aguacongas.AspNetCore.Components.Maui.Authentication", "src\Aguacongas.AspNetCore.Components.Maui.Authentication\Aguacongas.AspNetCore.Components.Maui.Authentication.csproj", "{C1648495-2589-47A3-AE08-8370846E4669}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc", "src\Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc\Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.csproj", "{C1648495-2589-47A3-AE08-8370846E4669}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{89033CFA-9E39-42BB-9FAA-E2DF5B53FC1E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Maui.Blazor", "samples\Maui.Blazor\Maui.Blazor.csproj", "{E27A2CF6-1E90-4025-A516-40949111EAA4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Maui.Blazor.Client", "samples\Client\Maui.Blazor.Client.csproj", "{E27A2CF6-1E90-4025-A516-40949111EAA4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{D37C16D1-FEC6-4977-BF4A-9E9D7A7C7325}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aguacongas.AspNetCore.Components.Maui.Authentication.Test", "test\Aguacongas.AspNetCore.Components.Maui.Authentication.Test\Aguacongas.AspNetCore.Components.Maui.Authentication.Test.csproj", "{9B1D2D0F-6CF7-470A-938E-1CB9A7B63107}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Test", "test\Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Test\Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Test.csproj", "{9B1D2D0F-6CF7-470A-938E-1CB9A7B63107}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OidcAndApiServer", "samples\OidcAndApiServer\OidcAndApiServer.csproj", "{DDC7AD28-345D-4079-B576-8ACCB5D30642}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Maui.Blazor.Server", "samples\Server\Maui.Blazor.Server.csproj", "{DDC7AD28-345D-4079-B576-8ACCB5D30642}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "samples\Shared\Shared.csproj", "{53080B26-3FD7-4F23-A3B3-EBEE8CC68599}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Maui.Blazor.Shared", "samples\Shared\Maui.Blazor.Shared.csproj", "{53080B26-3FD7-4F23-A3B3-EBEE8CC68599}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
