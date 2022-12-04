@@ -80,7 +80,7 @@ public class OidcAuthenticationServiceTest
             }
         });
         var snapshotMock = new Mock<IOptionsSnapshot<RemoteAuthenticationOptions<OidcProviderOptions>>>();
-        snapshotMock.Setup(m => m.Get(It.IsAny<string>())).Returns(new RemoteAuthenticationOptions<OidcProviderOptions>
+        snapshotMock.SetupGet(m => m.Value).Returns(new RemoteAuthenticationOptions<OidcProviderOptions>
         {
 
         });
@@ -165,7 +165,7 @@ public class OidcAuthenticationServiceTest
             }
         });
         var snapshotMock = new Mock<IOptionsSnapshot<RemoteAuthenticationOptions<OidcProviderOptions>>>();
-        snapshotMock.Setup(m => m.Get(It.IsAny<string>())).Returns(new RemoteAuthenticationOptions<OidcProviderOptions>
+        snapshotMock.SetupGet(m => m.Value).Returns(new RemoteAuthenticationOptions<OidcProviderOptions>
         {
 
         });
@@ -243,9 +243,8 @@ public class OidcAuthenticationServiceTest
             }
         });
         var snapshotMock = new Mock<IOptionsSnapshot<RemoteAuthenticationOptions<OidcProviderOptions>>>();
-        snapshotMock.Setup(m => m.Get(It.IsAny<string>())).Returns(new RemoteAuthenticationOptions<OidcProviderOptions>
+        snapshotMock.SetupGet(m => m.Value).Returns(new RemoteAuthenticationOptions<OidcProviderOptions>
         {
-
         });
         var sut = new OidcAuthenticationService<RemoteAuthenticationState>(oidcClient, storeMock.Object, new FakeNavigationManager(), snapshotMock.Object);
         await sut.SignInAsync(new RemoteAuthenticationContext<RemoteAuthenticationState>());
@@ -305,7 +304,7 @@ public class OidcAuthenticationServiceTest
             }
         });
         var snapshotMock = new Mock<IOptionsSnapshot<RemoteAuthenticationOptions<OidcProviderOptions>>>();
-        snapshotMock.Setup(m => m.Get(It.IsAny<string>())).Returns(new RemoteAuthenticationOptions<OidcProviderOptions>
+        snapshotMock.SetupGet(m => m.Value).Returns(new RemoteAuthenticationOptions<OidcProviderOptions>
         {
 
         });
@@ -373,7 +372,7 @@ public class OidcAuthenticationServiceTest
             }
         });
         var snapshotMock = new Mock<IOptionsSnapshot<RemoteAuthenticationOptions<OidcProviderOptions>>>();
-        snapshotMock.Setup(m => m.Get(It.IsAny<string>())).Returns(new RemoteAuthenticationOptions<OidcProviderOptions>
+        snapshotMock.SetupGet(m => m.Value).Returns(new RemoteAuthenticationOptions<OidcProviderOptions>
         {
 
         });
