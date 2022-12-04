@@ -3,6 +3,10 @@ using Maui.Blazor.Data;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Http;
+#if ANDROID
+using Microsoft.Maui.LifecycleEvents;
+using Microsoft.Identity.Client;
+#endif
 
 namespace Maui.Blazor;
 
@@ -13,7 +17,19 @@ public static class MauiProgram
 		var builder = MauiApp.CreateBuilder();
 		builder
 			.UseMauiApp<App>()
-			.ConfigureFonts(fonts =>
+#if ANDROID
+		    .ConfigureLifecycleEvents(events =>
+            {
+                events.AddAndroid(platform =>
+                {
+                    platform.OnActivityResult((activity, rc, result, data) =>
+                    {
+                        AuthenticationContinuationHelper.SetAuthenticationContinuationEventArgs(rc, result, data);
+                    });
+                });
+            })
+#endif
+            .ConfigureFonts(fonts =>
 			{
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
 			});
@@ -27,7 +43,7 @@ public static class MauiProgram
 #endif
 
 	string authorityUrl =
-		DeviceInfo.Platform == DevicePlatform.Android ? "https://10.0.2.2:5001" : "https://localhost:5001";
+		DeviceInfo.Platform == DevicePlatform.Android ? "https://10.0.2.2:5001/" : "https://localhost:5001/";
 
         services.AddMauiOidcAuthentication(options =>
 			{
@@ -40,7 +56,9 @@ public static class MauiProgram
                 providerOptions.DefaultScopes.Add("scope1");
             }, ConfigureHttpMessgeBuilder);
 
-		services.AddSingleton<WeatherForecastService>()
+
+
+        services.AddSingleton<WeatherForecastService>()
 			.AddTransient(p =>
 			{
 				var handler = new AuthorizationMessageHandler(p.GetRequiredService<IAccessTokenProvider>(),

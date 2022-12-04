@@ -1,15 +1,9 @@
-﻿using Aguacongas.AspNetCore.Components.Maui.Authentication.Abstraction;
-using Aguacongas.AspNetCore.Components.Maui.Authentication.Services;
+﻿using Aguacongas.AspNetCore.Components.Maui.Authentication.Services;
 using Aguacongas.AspNetCore.Components.Maui.Authentication.Test.Utils;
-using IdentityModel.OidcClient;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Identity.Client;
 
 namespace Aguacongas.AspNetCore.Components.Maui.Authentication.Test.Extensions;
 
@@ -31,10 +25,9 @@ public class ServiceCollectionExtensionsTest
         var provider = services.BuildServiceProvider();
 
         Assert.IsType<OidcAuthenticationService<RemoteAuthenticationState>>(provider.GetService<AuthenticationStateProvider>());
-        Assert.IsType<AuthenticationStore>(provider.GetService<IAuthenticationStore>());
         Assert.NotNull(provider.GetService<IWebAuthenticator>());
         Assert.NotNull(provider.GetService<ISecureStorage>());
-        Assert.NotNull(provider.GetService<OidcClient>());
+        Assert.NotNull(provider.GetService<IPublicClientApplication>());
     }
 
     [Fact]
@@ -56,8 +49,8 @@ public class ServiceCollectionExtensionsTest
 
         var provider = services.BuildServiceProvider();
 
-        var oidcClient = provider.GetRequiredService<OidcClient>();
-        var httpClient = oidcClient.Options.HttpClientFactory(oidcClient.Options);
+        var oidcClient = provider.GetRequiredService<IPublicClientApplication>();
+        var httpClient = oidcClient.AppConfig.HttpClientFactory.GetHttpClient();
         Assert.NotNull(httpClient);
 
         Assert.True(called);

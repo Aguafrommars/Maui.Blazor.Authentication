@@ -1,11 +1,10 @@
-﻿using Aguacongas.AspNetCore.Components.Maui.Authentication.Abstraction;
-using Aguacongas.AspNetCore.Components.Maui.Authentication.Services;
-using IdentityModel.OidcClient;
+﻿using Aguacongas.AspNetCore.Components.Maui.Authentication.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Http;
 using Microsoft.Extensions.Options;
+using Microsoft.Identity.Client;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -67,41 +66,26 @@ public static class ServiceCollectionExtensions
         where TAccount : RemoteUserAccount
     {
         services.TryAddScoped<AuthenticationStateProvider, OidcAuthenticationService<TRemoteAuthenticationState>>();
-        services.TryAddTransient<IAuthenticationStore, AuthenticationStore>();
-#if WINDOWS
-	    services.AddScoped<IWebAuthenticator>(p => WinUIEx.WebAuthenticator.Instance);
-#else
-        services.TryAddScoped(sp => WebAuthenticator.Default);
-#endif
-
         services.TryAddScoped(sp => SecureStorage.Default);
         services.TryAddScoped(sp =>
         {
             var settings = sp.GetRequiredService<IOptions<RemoteAuthenticationOptions<OidcProviderOptions>>>().Value;
             var providerOptions = settings.ProviderOptions;
-            var options = new OidcClientOptions
-            {
-                Authority = providerOptions.Authority,
-                Browser = new WebBrowserAuthenticator(sp.GetRequiredService<IWebAuthenticator>()),
-                ClientId = providerOptions.ClientId,
-                Scope = string.Join(" ", providerOptions.DefaultScopes),
-                RedirectUri = providerOptions.RedirectUri,
-                PostLogoutRedirectUri = providerOptions.PostLogoutRedirectUri,
-                RefreshDiscoveryDocumentForLogin = false,
-                HttpClientFactory =
-                    o => sp.GetRequiredService<IHttpClientFactory>().CreateClient(nameof(OidcClient))
-            };
-            return new OidcClient(options);
+            var builder = PublicClientApplicationBuilder
+                .Create(providerOptions.ClientId)
+                .WithAuthority(providerOptions.Authority, false)
+                .WithHttpClientFactory(sp.GetRequiredService<IMsalHttpClientFactory>())
+                .WithRedirectUri(providerOptions.RedirectUri);
+#if ANDROID
+            builder.WithParentActivityOrWindow(() => Platform.CurrentActivity);
+#elif IOS
+            builder.WithIosKeychainSecurityGroup("com.microsoft.adalcache");
+#endif
+            return builder.Build();
         });
 
-        services.AddHttpClient(nameof(OidcClient))
-            .ConfigureHttpMessageHandlerBuilder(builder =>
-            {
-                if (configureBuilder is not null)
-                {
-                    configureBuilder(builder);
-                }
-            });
+        services.AddHttpClient<MsalHttpClientFactory>()
+            .ConfigureHttpMessageHandlerBuilder(configureBuilder);
 
         return services.AddOidcAuthentication<TRemoteAuthenticationState, TAccount>(configure);
     }

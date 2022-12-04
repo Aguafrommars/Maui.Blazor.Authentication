@@ -57,7 +57,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Aguacongas.AspNetCore.Components.Maui.Authentication\Aguacongas.AspNetCore.Components.Maui.Authentication.csproj" />
+    <ProjectReference Include="..\..\src\Aguacongas.AspNetCore.Components.Maui.Authentication\Aguacongas.AspNetCore.Components.Maui.Authentication.Msal.csproj" />
     <ProjectReference Include="..\Shared\Shared.csproj" />
   </ItemGroup>
 

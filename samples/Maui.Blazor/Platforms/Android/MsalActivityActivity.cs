@@ -1,6 +1,7 @@
 ﻿using Android.App;
 using Android.Content;
 using Android.Content.PM;
+using Microsoft.Identity.Client;
 
 namespace Maui.Blazor.Platforms.Android;
 
@@ -15,7 +16,7 @@ namespace Maui.Blazor.Platforms.Android;
               "authentication/login-callback",
               "authentication/login-callback"
               })]
-public class OidcAuthenticationCallbackActivity : WebAuthenticatorCallbackActivity
+public class OidcAuthenticationCallbackActivity : BrowserTabActivity
 {
     const string CALLBACK_SCHEME = "mauiblazorsample";
 }
