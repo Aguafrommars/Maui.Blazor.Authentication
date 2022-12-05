@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Test.Utils;
+﻿namespace Ch.Sien.PwdManagement.Front.Test;
 
 internal class FakeHttpMessageHandler : HttpMessageHandler
 {
-    public Func<HttpRequestMessage, Task<HttpResponseMessage>> Func { get; set; }
+    public Func<HttpRequestMessage, Task<HttpResponseMessage>>? Func { get; set; }
     protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-    => Func(request);
+    => Func != null ? Func(request) : throw new InvalidOperationException("Func must be initialized");
 }
