@@ -21,7 +21,7 @@ elseif ($env:APPVEYOR_REPO_BRANCH) {
 
 if ($env:CI -And ((-Not $env:APPVEYOR_PULL_REQUEST_NUMBER) -Or ($env:APPVEYOR_PULL_REQUEST_HEAD_REPO_NAME -eq $env:APPVEYOR_REPO_NAME))) {
 	Write-Host "dotnet sonarscanner begin /k:Aguafrommars_Maui.Blazor.Authentication -o:aguacongas -d:sonar.host.url=https://sonarcloud.io -d:sonar.login=****** -d:sonar.coverageReportPaths=coverage\SonarQube.xml $prArgs -v:$env:Version"
-	dotnet sonarscanner begin /k:Aguafrommars_DynamicConfiguration -o:aguafrommars -d:sonar.host.url=https://sonarcloud.io -d:sonar.login=$env:sonarqube -d:sonar.coverageReportPaths=coverage\SonarQube.xml $prArgs -v:$env:Version
+	dotnet sonarscanner begin /k:Aguafrommars_Maui.Blazor.Authentication -o:aguafrommars -d:sonar.host.url=https://sonarcloud.io -d:sonar.login=$env:sonarqube -d:sonar.coverageReportPaths=coverage\SonarQube.xml $prArgs -v:$env:Version
 }
 
 Write-Host "dotnet test -c Release --settings coverletArgs.runsettings  -v q"
