@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Maui.Blazor;
+namespace Maui.Blazor.Client;
 
 public class HttpsClientHandlerService
 {

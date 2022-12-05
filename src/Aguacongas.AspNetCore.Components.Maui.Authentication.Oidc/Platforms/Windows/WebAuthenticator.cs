@@ -1,8 +1,14 @@
 ﻿using System.Collections.Specialized;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
+using System.Web;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using AppLifecycle = Microsoft.Windows.AppLifecycle;
 
 namespace WinUIEx;
 
@@ -27,19 +33,19 @@ internal sealed class WebAuthenticator: IWebAuthenticator
 
     public static readonly WebAuthenticator Instance = new();
 
-    private Dictionary<string, TaskCompletionSource<Uri>> tasks = new Dictionary<string, TaskCompletionSource<Uri>>();
+    private readonly Dictionary<string, TaskCompletionSource<Uri>> tasks = new();
 
     private WebAuthenticator()
     {
-        Microsoft.Windows.AppLifecycle.AppInstance.GetCurrent().Activated += CurrentAppInstance_Activated;
+        AppLifecycle.AppInstance.GetCurrent().Activated += CurrentAppInstance_Activated;
     }
 
     public Task<WebAuthenticatorResult> AuthenticateAsync(WebAuthenticatorOptions webAuthenticatorOptions)
     => AuthenticateAsync(webAuthenticatorOptions.Url, webAuthenticatorOptions.CallbackUrl);
 
 
-    [System.Runtime.CompilerServices.ModuleInitializer]
-
+    [ModuleInitializer]
+    [SuppressMessage("Usage", "CA2255:The 'ModuleInitializer' attribute should not be used in libraries", Justification = "<Pending>")]
     internal static void Init()
     {
         try
@@ -48,14 +54,17 @@ internal sealed class WebAuthenticator: IWebAuthenticator
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Trace.WriteLine("WinUIEx: Failed to initialize the WebAuthenticator: " + ex.Message, "WinUIEx");
+            Trace.WriteLine($"WinUIEx: Failed to initialize the WebAuthenticator: {ex.Message}", "WinUIEx");
         }
     }
 
     private static bool IsUriProtocolDeclared(string scheme)
     {
-        if (global::Windows.ApplicationModel.Package.Current is null)
+        if (Package.Current is null)
+        {
             return false;
+        }
+            
         var docPath = Path.Combine(global::Windows.ApplicationModel.Package.Current.InstalledLocation.Path, "AppxManifest.xml");
         var doc = XDocument.Load(docPath, LoadOptions.None);
         var reader = doc.CreateReader();
@@ -69,9 +78,9 @@ internal sealed class WebAuthenticator: IWebAuthenticator
         return decl != null && decl.Any();
     }
 
-    private static NameValueCollection? GetState(Microsoft.Windows.AppLifecycle.AppActivationArguments activatedEventArgs)
+    private static NameValueCollection GetState(AppLifecycle.AppActivationArguments activatedEventArgs)
     {
-        if (activatedEventArgs.Kind == Microsoft.Windows.AppLifecycle.ExtendedActivationKind.Protocol &&
+        if (activatedEventArgs.Kind == AppLifecycle.ExtendedActivationKind.Protocol &&
             activatedEventArgs.Data is IProtocolActivatedEventArgs protocolArgs)
         {
             return GetState(protocolArgs);
@@ -79,36 +88,35 @@ internal sealed class WebAuthenticator: IWebAuthenticator
         return null;
     }
 
-    private static NameValueCollection? GetState(IProtocolActivatedEventArgs protocolArgs)
+    private static NameValueCollection GetState(IProtocolActivatedEventArgs protocolArgs)
     {
-        NameValueCollection? vals = null;
-        try
+        var query = protocolArgs.Uri.Query;
+        var vals = !string.IsNullOrEmpty(query) ? HttpUtility.ParseQueryString(query) : null;
+
+        if (vals?["state"] is null)
         {
-            vals = System.Web.HttpUtility.ParseQueryString(protocolArgs.Uri.Query);
-        }
-        catch { }
-        try
-        {
-            if (vals is null || !(vals["state"] is string))
+            var fragment = protocolArgs.Uri.Fragment;
+            if (fragment.StartsWith("#"))
             {
-                var fragment = protocolArgs.Uri.Fragment;
-                if (fragment.StartsWith("#"))
-                {
-                    fragment = fragment.Substring(1);
-                }
-                vals = System.Web.HttpUtility.ParseQueryString(fragment);
+                fragment = fragment[1..];
             }
+            vals = HttpUtility.ParseQueryString(fragment);
         }
-        catch { }
-        if (vals != null && vals["state"] is string state)
+
+        if (vals?["state"] is string state)
         {
-            var vals2 = System.Web.HttpUtility.ParseQueryString(state);
+            var vals2 = HttpUtility.ParseQueryString(state);
             // Some services doesn't like & encoded state parameters, and breaks them out separately.
             // In that case copy over the important values
             if (vals.AllKeys.Contains("appInstanceId") && !vals2.AllKeys.Contains("appInstanceId"))
+            {
                 vals2.Add("appInstanceId", vals["appInstanceId"]);
+            }
             if (vals.AllKeys.Contains("signinId") && !vals2.AllKeys.Contains("signinId"))
+            {
                 vals2.Add("signinId", vals["signinId"]);
+            }
+
             return vals2;
         }
         return null;
@@ -116,51 +124,51 @@ internal sealed class WebAuthenticator: IWebAuthenticator
 
     private static void OnAppCreation()
     {
-        var activatedEventArgs = Microsoft.Windows.AppLifecycle.AppInstance.GetCurrent()?.GetActivatedEventArgs();
+        var activatedEventArgs = AppLifecycle.AppInstance.GetCurrent()?.GetActivatedEventArgs();
         if (activatedEventArgs is null)
+        {
             return;
+        }
+            
         var state = GetState(activatedEventArgs);
         if (state is not null && state["appInstanceId"] is string id && state["signinId"] is string signinId && !string.IsNullOrEmpty(signinId))
         {
-            var instance = Microsoft.Windows.AppLifecycle.AppInstance.GetInstances().Where(i => i.Key == id).FirstOrDefault();
+            var instance = AppLifecycle.AppInstance.GetInstances().Where(i => i.Key == id).FirstOrDefault();
 
             if (instance is not null && !instance.IsCurrent)
             {
                 // Redirect to correct instance and close this one
                 instance.RedirectActivationToAsync(activatedEventArgs).AsTask().Wait();
-                System.Diagnostics.Process.GetCurrentProcess().Kill();
+                Process.GetCurrentProcess().Kill();
             }
         }
         else
         {
-            var thisInstance = Microsoft.Windows.AppLifecycle.AppInstance.GetCurrent();
+            var thisInstance = AppLifecycle.AppInstance.GetCurrent();
             if (string.IsNullOrEmpty(thisInstance.Key))
             {
-                Microsoft.Windows.AppLifecycle.AppInstance.FindOrRegisterForKey(Guid.NewGuid().ToString());
+                AppLifecycle.AppInstance.FindOrRegisterForKey(Guid.NewGuid().ToString());
             }
         }
     }
 
-    private void CurrentAppInstance_Activated(object? sender, Microsoft.Windows.AppLifecycle.AppActivationArguments e)
+    private void CurrentAppInstance_Activated(object sender, AppLifecycle.AppActivationArguments e)
     {
-        if (e.Kind == Microsoft.Windows.AppLifecycle.ExtendedActivationKind.Protocol)
+        if (e.Kind == AppLifecycle.ExtendedActivationKind.Protocol &&
+            e.Data is IProtocolActivatedEventArgs protocolArgs)
         {
-            if (e.Data is IProtocolActivatedEventArgs protocolArgs)
+            var vals = GetState(protocolArgs);
+            if (vals?["signinId"] is string signinId)
             {
-                var vals = GetState(protocolArgs);
-                if (vals is not null && vals["signinId"] is string signinId)
-                {
-                    ResumeSignin(protocolArgs.Uri, signinId);
-                }
+                ResumeSignin(protocolArgs.Uri, signinId);
             }
         }
     }
 
     private void ResumeSignin(Uri callbackUri, string signinId)
     {
-        if (signinId != null && tasks.ContainsKey(signinId))
+        if (signinId != null && tasks.TryGetValue(signinId, out var task))
         {
-            var task = tasks[signinId];
             tasks.Remove(signinId);
             task.TrySetResult(callbackUri);
         }
@@ -168,7 +176,7 @@ internal sealed class WebAuthenticator: IWebAuthenticator
 
     private async Task<WebAuthenticatorResult> Authenticate(Uri authorizeUri, Uri callbackUri)
     {
-        if (global::Windows.ApplicationModel.Package.Current is null)
+        if (Package.Current is null)
         {
             throw new InvalidOperationException("The WebAuthenticator requires a packaged app with an AppxManifest");
         }
@@ -177,21 +185,21 @@ internal sealed class WebAuthenticator: IWebAuthenticator
             throw new InvalidOperationException($"The URI Scheme {callbackUri.Scheme} is not declared in AppxManifest.xml");
         }
         var g = Guid.NewGuid();
-        UriBuilder b = new UriBuilder(authorizeUri);
+        var b = new UriBuilder(authorizeUri);
 
-        var query = System.Web.HttpUtility.ParseQueryString(authorizeUri.Query);
-        var state = $"appInstanceId={Microsoft.Windows.AppLifecycle.AppInstance.GetCurrent().Key}&signinId={g}";
+        var query = HttpUtility.ParseQueryString(authorizeUri.Query);
+        var state = $"appInstanceId={AppLifecycle.AppInstance.GetCurrent().Key}&signinId={g}";
         if (query["state"] is string oldstate && !string.IsNullOrEmpty(oldstate))
         {
             // Encode the state parameter
-            state += "&state=" + System.Web.HttpUtility.UrlEncode(oldstate);
+            state += $"&state={HttpUtility.UrlEncode(oldstate)}";
         }
         query["state"] = state;
         b.Query = query.ToString();
         authorizeUri = b.Uri;
 
         var tcs = new TaskCompletionSource<Uri>();
-        var process = new System.Diagnostics.Process();
+        var process = new Process();
         process.StartInfo.FileName = "rundll32.exe";
         process.StartInfo.Arguments = "url.dll,FileProtocolHandler " + authorizeUri.ToString();
         process.StartInfo.UseShellExecute = true;

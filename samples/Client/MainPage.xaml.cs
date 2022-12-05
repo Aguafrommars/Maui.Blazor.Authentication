@@ -1,4 +1,4 @@
-﻿namespace Maui.Blazor;
+﻿namespace Maui.Blazor.Client;
 
 public partial class MainPage : ContentPage
 {

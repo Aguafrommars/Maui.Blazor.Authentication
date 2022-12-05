@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
-using Maui.Blazor.Data;
+using Maui.Blazor.Client.Data;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Http;
 
-namespace Maui.Blazor;
+namespace Maui.Blazor.Client;
 
 public static class MauiProgram
 {

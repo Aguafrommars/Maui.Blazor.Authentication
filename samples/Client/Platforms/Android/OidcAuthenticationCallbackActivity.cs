@@ -2,7 +2,7 @@
 using Android.Content;
 using Android.Content.PM;
 
-namespace Maui.Blazor.Platforms.Android;
+namespace Maui.Blazor.Client.Platforms.Android;
 
 [Activity(NoHistory = true, LaunchMode = LaunchMode.SingleTop, Exported = true)]
 [IntentFilter(new[] { Intent.ActionView },

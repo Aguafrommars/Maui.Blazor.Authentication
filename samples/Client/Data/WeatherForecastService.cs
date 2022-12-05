@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Maui.Blazor.Shared;
 using System.Net.Http.Json;
 
-namespace Maui.Blazor.Data;
+namespace Maui.Blazor.Client.Data;
 
 public class WeatherForecastService
 {

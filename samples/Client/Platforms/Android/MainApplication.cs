@@ -1,7 +1,7 @@
 ﻿using Android.App;
 using Android.Runtime;
 
-namespace Maui.Blazor;
+namespace Maui.Blazor.Client;
 
 [Application]
 public class MainApplication : MauiApplication
