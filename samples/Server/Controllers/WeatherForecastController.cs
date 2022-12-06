@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Maui.Blazor.Shared;
+using Shared;
 
 namespace OidcAndApiServer.Controllers;
 

@@ -1,13 +1,11 @@
 ﻿@page "/fetchdata"
-@using Maui.Blazor.Client.Data
-@using Maui.Blazor.Shared;
-@using Microsoft.AspNetCore.Authorization;
-@inject WeatherForecastService ForecastService
-@attribute [Authorize]
+@inject HttpClient Http
+
+<PageTitle>Weather forecast</PageTitle>
 
 <h1>Weather forecast</h1>
 
-<p>This component demonstrates fetching data from a service.</p>
+<p>This component demonstrates fetching data from the server.</p>
 
 @if (forecasts == null)
 {
@@ -39,10 +37,10 @@ else
 }
 
 @code {
-    private WeatherForecast[] forecasts;
+    private WeatherForecast[]? forecasts;
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await ForecastService.GetForecastAsync();
+        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("api/weatherforecast");
     }
 }

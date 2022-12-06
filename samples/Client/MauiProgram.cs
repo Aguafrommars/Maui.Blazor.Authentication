@@ -1,8 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
-using Maui.Blazor.Client.Data;
-using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
-using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Http;
+﻿using Microsoft.Extensions.Http;
+using Microsoft.Extensions.Logging;
 
 namespace Maui.Blazor.Client;
 
@@ -26,8 +23,8 @@ public static class MauiProgram
 		builder.Logging.AddDebug();
 #endif
 
-	string authorityUrl =
-		DeviceInfo.Platform == DevicePlatform.Android ? "https://10.0.2.2:5001" : "https://localhost:5001";
+		string authorityUrl =
+			DeviceInfo.Platform == DevicePlatform.Android ? "https://10.0.2.2:5001" : "https://localhost:5001";
 
         services.AddMauiOidcAuthentication(options =>
 			{
@@ -40,22 +37,7 @@ public static class MauiProgram
                 providerOptions.DefaultScopes.Add("scope1");
             }, ConfigureHttpMessgeBuilder);
 
-		services.AddSingleton<WeatherForecastService>()
-			.AddTransient(p =>
-			{
-				var handler = new AuthorizationMessageHandler(p.GetRequiredService<IAccessTokenProvider>(),
-					p.GetRequiredService<NavigationManager>());
-
-				handler.ConfigureHandler(new[]
-				{
-                    authorityUrl
-                });
-				return handler;
-            })
-            .AddHttpClient(nameof(WeatherForecastService))
-			.ConfigureHttpClient(client => client.BaseAddress = new Uri(authorityUrl))
-			.AddHttpMessageHandler<AuthorizationMessageHandler>()
-			.ConfigureHttpMessageHandlerBuilder(ConfigureHttpMessgeBuilder);
+		services.AddDefaultHttpClient(authorityUrl, ConfigureHttpMessgeBuilder);
 
         return builder.Build();
 	}
@@ -66,7 +48,7 @@ public static class MauiProgram
         var handler = new NSUrlSessionHandler();
         handler.TrustOverrideForUrl = (sender, url, trust) =>
         {
-            if (url.StartsWith("https://10.0.2.2:5001"))
+            if (url.StartsWith("https://localhost:5001"))
             {
                 return true;
             }

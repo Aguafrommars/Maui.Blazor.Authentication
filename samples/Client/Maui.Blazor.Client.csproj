@@ -58,7 +58,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc\Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.csproj" />
-    <ProjectReference Include="..\Shared\Maui.Blazor.Shared.csproj" />
+    <ProjectReference Include="..\UI\Blazor.UI.csproj" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties XamarinHotReloadDebuggerTimeoutExceptionMauiBlazorHideInfoBar="True" /></VisualStudio></ProjectExtensions>

@@ -1,4 +1,4 @@
-﻿namespace Maui.Blazor.Shared;
+﻿namespace Shared;
 public class WeatherForecast
 {
     public DateTime Date { get; set; }
