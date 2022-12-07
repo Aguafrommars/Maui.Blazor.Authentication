@@ -58,6 +58,7 @@ internal sealed class WebAuthenticator: IWebAuthenticator
         }
     }
 
+    [SuppressMessage("Minor Code Smell", "S1075:URIs should not be hardcoded", Justification = "Namespaces")]
     private static bool IsUriProtocolDeclared(string scheme)
     {
         if (Package.Current is null)
@@ -65,7 +66,7 @@ internal sealed class WebAuthenticator: IWebAuthenticator
             return false;
         }
             
-        var docPath = Path.Combine(global::Windows.ApplicationModel.Package.Current.InstalledLocation.Path, "AppxManifest.xml");
+        var docPath = Path.Combine(Package.Current.InstalledLocation.Path, "AppxManifest.xml");
         var doc = XDocument.Load(docPath, LoadOptions.None);
         var reader = doc.CreateReader();
         var namespaceManager = new XmlNamespaceManager(reader.NameTable);
@@ -85,7 +86,7 @@ internal sealed class WebAuthenticator: IWebAuthenticator
         {
             return GetState(protocolArgs);
         }
-        return null;
+        return new NameValueCollection(0);
     }
 
     private static NameValueCollection GetState(IProtocolActivatedEventArgs protocolArgs)
@@ -119,7 +120,7 @@ internal sealed class WebAuthenticator: IWebAuthenticator
 
             return vals2;
         }
-        return null;
+        return new NameValueCollection(0);
     }
 
     private static void OnAppCreation()
@@ -131,9 +132,9 @@ internal sealed class WebAuthenticator: IWebAuthenticator
         }
             
         var state = GetState(activatedEventArgs);
-        if (state is not null && state["appInstanceId"] is string id && state["signinId"] is string signinId && !string.IsNullOrEmpty(signinId))
+        if (state["appInstanceId"] is string id && state["signinId"] is string signinId && !string.IsNullOrEmpty(signinId))
         {
-            var instance = AppLifecycle.AppInstance.GetInstances().Where(i => i.Key == id).FirstOrDefault();
+            var instance = AppLifecycle.AppInstance.GetInstances().FirstOrDefault(i => i.Key == id);
 
             if (instance is not null && !instance.IsCurrent)
             {
@@ -158,7 +159,7 @@ internal sealed class WebAuthenticator: IWebAuthenticator
             e.Data is IProtocolActivatedEventArgs protocolArgs)
         {
             var vals = GetState(protocolArgs);
-            if (vals?["signinId"] is string signinId)
+            if (vals["signinId"] is string signinId)
             {
                 ResumeSignin(protocolArgs.Uri, signinId);
             }
