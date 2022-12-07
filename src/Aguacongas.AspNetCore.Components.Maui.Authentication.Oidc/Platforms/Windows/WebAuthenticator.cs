@@ -199,10 +199,15 @@ internal sealed class WebAuthenticator: IWebAuthenticator
         authorizeUri = b.Uri;
 
         var tcs = new TaskCompletionSource<Uri>();
-        var process = new Process();
-        process.StartInfo.FileName = "rundll32.exe";
-        process.StartInfo.Arguments = "url.dll,FileProtocolHandler " + authorizeUri.ToString();
-        process.StartInfo.UseShellExecute = true;
+        var process = new Process
+        {
+            StartInfo = new ProcessStartInfo
+            {
+                FileName = "rundll32.exe",
+                Arguments = $"url.dll,FileProtocolHandler {authorizeUri}",
+                UseShellExecute = true
+            }
+        };
         process.Start();
         tasks.Add(g.ToString(), tcs);
         var uri = await tcs.Task.ConfigureAwait(false);
