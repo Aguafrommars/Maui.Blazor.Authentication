@@ -41,8 +41,9 @@ public static class Config
 
                 AllowedGrantTypes = GrantTypes.Code,
 
-                RedirectUris = { "mauiblazorsample://authentication/login-callback" },
-                PostLogoutRedirectUris = { "mauiblazorsample://authentication/logout-callback" },
+                AllowedCorsOrigins = { "https://localhost:7043" },
+                RedirectUris = { "mauiblazorsample://authentication/login-callback", "https://localhost:7043/authentication/login-callback" },
+                PostLogoutRedirectUris = { "mauiblazorsample://authentication/logout-callback", "https://localhost:7043/authentication/logout-callback" },
 
                 AllowOfflineAccess = true,
                 AllowedScopes = { "openid", "profile", "scope1" }

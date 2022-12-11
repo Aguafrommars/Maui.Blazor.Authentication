@@ -6,7 +6,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddDefaultHttpClient(this IServiceCollection services, string authorityUrl, Action<HttpMessageHandlerBuilder> configureBuilder = null)
+    public static IServiceCollection AddDefaultHttpClient(this IServiceCollection services, string authorityUrl, Action<HttpMessageHandlerBuilder>? configureBuilder = null)
     {
         services.AddTransient(p =>
         {

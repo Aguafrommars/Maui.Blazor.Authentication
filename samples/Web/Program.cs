@@ -15,6 +15,7 @@ services.AddOidcAuthentication(options =>
     var providerOptions = options.ProviderOptions;
     providerOptions.Authority = autorityUrl;
     providerOptions.ClientId = "mauiblazorsample";
+    providerOptions.ResponseType = "code";
     providerOptions.RedirectUri = "https://localhost:7043/authentication/login-callback";
     providerOptions.PostLogoutRedirectUri = "https://localhost:7043/authentication/logout-callback";
     providerOptions.DefaultScopes.Add("offline_access");

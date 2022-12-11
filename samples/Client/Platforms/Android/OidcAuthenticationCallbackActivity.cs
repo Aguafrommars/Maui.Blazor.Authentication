@@ -19,4 +19,3 @@ public class OidcAuthenticationCallbackActivity : WebAuthenticatorCallbackActivi
 {
     const string CALLBACK_SCHEME = "mauiblazorsample";
 }
-    

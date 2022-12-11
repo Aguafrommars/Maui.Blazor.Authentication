@@ -53,6 +53,12 @@ internal static class HostingExtensions
         }
 
         app.UseStaticFiles()
+            .UseCors(builder =>
+            {
+                builder.AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .WithOrigins("https://localhost:7043");
+            })
             .UseRouting()
             .UseIdentityServer()
             .UseAuthorization();

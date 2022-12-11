@@ -21,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "samples\Shared\Sh
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Web.Blazor.Client", "samples\Web\Web.Blazor.Client.csproj", "{C614B8D6-6E15-488D-AE6B-0C4E76B3F3C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.UI", "samples\UI\Blazor.UI.csproj", "{73083D35-6D57-4DF0-A173-5D3DCEC6690C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared.Blazor.UI", "samples\UI\Shared.Blazor.UI.csproj", "{73083D35-6D57-4DF0-A173-5D3DCEC6690C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
