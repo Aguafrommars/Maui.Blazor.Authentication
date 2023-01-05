@@ -31,4 +31,4 @@ appveyor UpdateBuild -Version $nextversion
 appveyor AddMessage "Version = $nextversion"
 
 dotnet workload restore
-dotnet restore
+dotnet restore -p:PublishReadyToRun=true
