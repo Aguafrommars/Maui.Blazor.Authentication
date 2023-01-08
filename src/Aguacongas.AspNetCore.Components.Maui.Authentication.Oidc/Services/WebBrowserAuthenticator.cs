@@ -4,15 +4,23 @@ using IBrowser = IdentityModel.OidcClient.Browser.IBrowser;
 
 namespace Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Services;
 
+/// <summary>
+/// Web browser authenticator
+/// </summary>
 public class WebBrowserAuthenticator : IBrowser
 {
     private readonly IWebAuthenticator _authenticator;
 
+    /// <summary>
+    /// Initialize a new instance of <see cref="WebBrowserAuthenticator"/>
+    /// </summary>
+    /// <param name="authenticator"></param>
     public WebBrowserAuthenticator(IWebAuthenticator authenticator)
     {
         _authenticator = authenticator;
     }
 
+    /// <inheritdoc/>
     public async Task<BrowserResult> InvokeAsync(BrowserOptions options, CancellationToken cancellationToken = default)
     {
         try

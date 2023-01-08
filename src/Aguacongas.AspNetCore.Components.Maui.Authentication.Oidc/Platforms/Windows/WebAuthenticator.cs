@@ -24,6 +24,9 @@ namespace WinUIEx;
 /// </remarks>
 internal sealed class WebAuthenticator: IWebAuthenticator
 {
+    /// <summary>
+    /// Singleton instance of <see cref="WebAuthenticator"/>
+    /// </summary>
     public static readonly WebAuthenticator Instance = new();
 
     private readonly Dictionary<string, TaskCompletionSource<Uri>> tasks = new();
@@ -32,11 +35,16 @@ internal sealed class WebAuthenticator: IWebAuthenticator
 
     private WebAuthenticator()
     {
-        _appInstance = AppLifecycle.AppInstance.GetCurrent() ?? throw new InvalidOperationException("The WebAuthenticator requires an app instance"); ;
-        _package = Package.Current ?? throw new InvalidOperationException("The WebAuthenticator requires a packaged app with an AppxManifest"); ;
+        _appInstance = AppLifecycle.AppInstance.GetCurrent() ?? throw new InvalidOperationException("The WebAuthenticator requires an app instance");
+        _package = Package.Current ?? throw new InvalidOperationException("The WebAuthenticator requires a packaged app with an AppxManifest");
         SubcribeToActivated(_appInstance);
     }
 
+    /// <summary>
+    /// Anthenticates the user
+    /// </summary>
+    /// <param name="webAuthenticatorOptions">The authentication options</param>
+    /// <returns></returns>
     public Task<WebAuthenticatorResult> AuthenticateAsync(WebAuthenticatorOptions webAuthenticatorOptions)
     => AuthenticateAsync(webAuthenticatorOptions.Url, webAuthenticatorOptions.CallbackUrl);
 
@@ -54,6 +62,10 @@ internal sealed class WebAuthenticator: IWebAuthenticator
             Trace.WriteLine($"WinUIEx: Failed to initialize the WebAuthenticator: {ex.Message}", "WinUIEx");
         }
     }
+
+    /// <summary>
+    /// Method call on application initialization.
+    /// </summary>
     public void OnAppCreation()
     {
         var activatedEventArgs = _appInstance?.GetActivatedEventArgs();

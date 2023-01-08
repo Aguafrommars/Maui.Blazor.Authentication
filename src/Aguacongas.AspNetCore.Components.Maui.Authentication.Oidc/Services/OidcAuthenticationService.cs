@@ -10,6 +10,10 @@ using System.Security.Claims;
 
 namespace Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Services;
 
+/// <summary>
+/// OIDC authentication service
+/// </summary>
+/// <typeparam name="TRemoteAuthenticationState"></typeparam>
 public class OidcAuthenticationService<TRemoteAuthenticationState> :
         AuthenticationStateProvider,
         IRemoteAuthenticationService<TRemoteAuthenticationState>,
@@ -36,6 +40,13 @@ public class OidcAuthenticationService<TRemoteAuthenticationState> :
         }
     }
 
+    /// <summary>
+    /// Initialize a new instance of <see cref="OidcAuthenticationService{TRemoteAuthenticationState}"/>
+    /// </summary>
+    /// <param name="oidcClient">An <see cref="OidcClient"/></param>
+    /// <param name="store">A <see cref="IAuthenticationStore"/></param>
+    /// <param name="navigation">A <see cref="NavigationManager"/></param>
+    /// <param name="options"><see cref="OidcProviderOptions"/></param>
     public OidcAuthenticationService(OidcClient oidcClient,
         IAuthenticationStore store,
         NavigationManager navigation,
@@ -47,12 +58,15 @@ public class OidcAuthenticationService<TRemoteAuthenticationState> :
         _options = options;
     }
 
+    /// <inheritdoc />
     public Task<RemoteAuthenticationResult<TRemoteAuthenticationState>> CompleteSignInAsync(RemoteAuthenticationContext<TRemoteAuthenticationState> context)
     => throw new NotImplementedException();
 
+    /// <inheritdoc />
     public Task<RemoteAuthenticationResult<TRemoteAuthenticationState>> CompleteSignOutAsync(RemoteAuthenticationContext<TRemoteAuthenticationState> context)
     => throw new NotImplementedException();
 
+    /// <inheritdoc />
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
         if (ExpireAt < DateTimeOffset.Now.AddMinutes(5))
@@ -74,12 +88,14 @@ public class OidcAuthenticationService<TRemoteAuthenticationState> :
         return new AuthenticationState(_principal);
     }
 
+    /// <inheritdoc />
     public ValueTask<AccessTokenResult> RequestAccessToken()
     => RequestAccessToken(new AccessTokenRequestOptions
     {
         Scopes = _options.Value.ProviderOptions.DefaultScopes
     });
 
+    /// <inheritdoc />
     public async ValueTask<AccessTokenResult> RequestAccessToken(AccessTokenRequestOptions options)
     {
         var authentication = await GetAuthenticationAsync(string.Join(' ', options.Scopes)).ConfigureAwait(false);
@@ -99,6 +115,7 @@ public class OidcAuthenticationService<TRemoteAuthenticationState> :
             } : null);
     }
 
+    /// <inheritdoc />
     public async Task<RemoteAuthenticationResult<TRemoteAuthenticationState>> SignInAsync(RemoteAuthenticationContext<TRemoteAuthenticationState> context)
     {
         var result = await _oidcClient.LoginAsync().ConfigureAwait(false);
@@ -114,6 +131,7 @@ public class OidcAuthenticationService<TRemoteAuthenticationState> :
         };
     }
 
+    /// <inheritdoc />
     public async Task<RemoteAuthenticationResult<TRemoteAuthenticationState>> SignOutAsync(RemoteAuthenticationContext<TRemoteAuthenticationState> context)
     {
         await Task.Factory.StartNew(() => _oidcClient.LogoutAsync());
