@@ -17,6 +17,18 @@
 		<CodeAnalysisRuleSet>..\..\.sonarlint\aguafrommars_maui.blazor.authenticationcsharp.ruleset</CodeAnalysisRuleSet>
     <PackageReadmeFile>README.md</PackageReadmeFile>
 		<PublishReadyToRun>false</PublishReadyToRun>
+    <Authors>Olivier Lefebvre</Authors>
+    <Description>Simplify OIDC authentication for MAUI Blazor app.</Description>
+    <Copyright>Copyright (c) 2023 @Olivier Lefebvre</Copyright>
+    <PackageProjectUrl>https://github.com/Aguafrommars/Maui.Blazor.Authentication/tree/main/src/Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Aguafrommars/Maui.Blazor.Authentication</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>
+      openid-connect;oidc;openidconnect-client;maui;blazor;maui-blazor;auhtentication</PackageTags>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageIcon>package-icon.png</PackageIcon>
+    <Title>Maui.Blazor.Authentication</Title>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
 	<ItemGroup>
@@ -30,7 +42,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath="\"/>
+    <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
-
+  <ItemGroup>
+    <None Include="package-icon.png" Pack="true" PackagePath="" />
+  </ItemGroup>
 </Project>
