@@ -6,7 +6,18 @@ Simplify OIDC authentication for MAUI Blazor app
 
 [![Build status](https://ci.appveyor.com/api/projects/status/sfbc266vmv95kf3l/branch/main?svg=true)](https://ci.appveyor.com/project/aguacongas/maui-blazor-authentication/branch/main)
 
-## Use
+Nuget packages
+--------------
+|Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc|
+|:------:|
+|[![][Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc-badge]][Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc-nuget]|
+|[![][Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc-downloadbadge]][Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc-nuget]|
+
+[Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc-badge]: https://img.shields.io/nuget/v/Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.svg
+[Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc-downloadbadge]: https://img.shields.io/nuget/dt/Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.svg
+[Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc-nuget]: https://www.nuget.org/packages/Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc/
+
+## Setup
 
 Read [`Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc` *Readme.md*](src/Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc/README.md) for information to use the library.
 
