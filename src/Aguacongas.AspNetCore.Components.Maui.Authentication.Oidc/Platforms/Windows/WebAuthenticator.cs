@@ -32,8 +32,8 @@ internal sealed class WebAuthenticator: IWebAuthenticator
 
     private WebAuthenticator()
     {
-        _appInstance = AppLifecycle.AppInstance.GetCurrent() ?? throw new InvalidOperationException("The WebAuthenticator requires an app instance"); ;
-        _package = Package.Current ?? throw new InvalidOperationException("The WebAuthenticator requires a packaged app with an AppxManifest"); ;
+        _appInstance = AppLifecycle.AppInstance.GetCurrent() ?? throw new InvalidOperationException("The WebAuthenticator requires an app instance");
+        _package = Package.Current ?? throw new InvalidOperationException("The WebAuthenticator requires a packaged app with an AppxManifest");
         SubcribeToActivated(_appInstance);
     }
 
