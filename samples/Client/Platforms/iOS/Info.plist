@@ -41,5 +41,7 @@
 			<string>Editor</string>
 		</dict>
 	</array>
+	<key>CFBundleIdentifier</key>
+	<string>client.maui.blazor</string>
 </dict>
 </plist>
