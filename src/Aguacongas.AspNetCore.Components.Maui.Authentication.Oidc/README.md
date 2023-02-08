@@ -138,6 +138,32 @@ public class AppDelegate : MauiUIApplicationDelegate
 }
 ```
 
+#### iOS Keychain Entitlement
+
+Tokens are  stored using default `SecureStorage` and in iOS you need to add the [Keychain Entitlement](https://learn.microsoft.com/en-us/dotnet/maui/ios/entitlements?view=net-maui-7.0&tabs=vs#keychain).
+
+Add a *Entitlements.plist* in *Platforms/iOS* :
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>keychain-access-groups</key>
+    <array>
+      <string>$(AppIdentifierPrefix)client.maui.blazor</string>            
+    </array>
+  </dict>
+</plist>
+```
+
+The sting suffix (**client.maui.blazor** in this sample) should match the Bundle Identifier of *info.plist* file.
+
+```xml
+<key>CFBundleIdentifier</key>
+<string>client.maui.blazor</string>
+```
+
 ### Windows
 
 Add following protocol extension in *Package.appxmanifest* file.

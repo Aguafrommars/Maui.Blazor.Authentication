@@ -4,7 +4,7 @@
   <dict>
     <key>keychain-access-groups</key>
     <array>
-      <string>$(AppIdentifierPrefix)com.companyname.maui.blazor</string>            
+      <string>$(AppIdentifierPrefix)client.maui.blazor</string>            
     </array>
   </dict>
 </plist>
