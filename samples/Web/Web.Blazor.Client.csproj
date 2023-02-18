@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <CodeAnalysisRuleSet>..\..\.sonarlint\aguafrommars_maui.blazor.authenticationcsharp.ruleset</CodeAnalysisRuleSet>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\.sonarlint\aguafrommars_maui.blazor.authentication\CSharp\SonarLint.xml" Link="SonarLint.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.0" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\UI\Shared.Blazor.UI.csproj" />
+  </ItemGroup>
+
+</Project>

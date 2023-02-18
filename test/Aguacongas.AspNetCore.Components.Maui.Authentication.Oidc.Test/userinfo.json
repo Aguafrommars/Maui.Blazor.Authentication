@@ -1,0 +1,18 @@
+{
+  "sub": "6a9d3bbc-b8e1-4df0-882f-1e79da9a6a89",
+  "birthdate": "1970-01-01",
+  "gender": "female",
+  "name": "Alice Smith",
+  "picture": "http://alice.com/picture",
+  "zoneinfo": "ch",
+  "updated_at": 1669475979,
+  "profile": "http://alice.com/profile",
+  "given_name": "Alice",
+  "middle_name": "Alice Smith",
+  "locale": "fr",
+  "family_name": "Smith",
+  "website": "http://alice.com",
+  "nickname": "alice",
+  "role": [ "Is4-Reader", "Is4-Writer" ],
+  "preferred_username": "alice"
+}

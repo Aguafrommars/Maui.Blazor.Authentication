@@ -1,0 +1,9 @@
+{
+  "issuer": "https://exemple.com",
+  "jwks_uri": "https://exemple.com/.well-known/openid-configuration/jwks",
+  "authorization_endpoint": "https://exemple.com/connect/authorize",
+  "token_endpoint": "https://exemple.com/connect/token",
+  "userinfo_endpoint": "https://exemple.com/connect/userinfo",
+  "end_session_endpoint": "https://exemple.com/connect/endsession",
+  "check_session_iframe": "https://exemple.com/connect/checksession"
+}
