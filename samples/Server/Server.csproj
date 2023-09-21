@@ -1,15 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <CodeAnalysisRuleSet>..\..\.sonarlint\aguafrommars_maui.blazor.authenticationcsharp.ruleset</CodeAnalysisRuleSet>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
-
-  <ItemGroup>
-    <AdditionalFiles Include="..\..\.sonarlint\aguafrommars_maui.blazor.authentication\CSharp\SonarLint.xml" Link="SonarLint.xml" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Duende.IdentityServer" Version="6.3.4" />
