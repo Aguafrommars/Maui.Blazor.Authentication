@@ -5,11 +5,6 @@ using IdentityModel.OidcClient;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Test.Extensions;
 
@@ -38,7 +33,7 @@ public class ServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddMauiOidcAuthentication_should_configure_http_message_builder()
+    public void AddMauiOidcAuthentication_should_configure_http_message_handler()
     {
         var called = false;
         var services = new ServiceCollection();
@@ -49,9 +44,10 @@ public class ServiceCollectionExtensionsTest
                 providerOptions.Authority = "https://exemple.com";
                 providerOptions.RedirectUri = "test://authentication/login-callback";
                 providerOptions.PostLogoutRedirectUri = "test://authentication/logout-callback";
-            }, builder =>
+            }, provider =>
             {
                 called = true;
+                return provider.GetRequiredService<IHttpMessageHandlerFactory>().CreateHandler();
             });
 
         var provider = services.BuildServiceProvider();

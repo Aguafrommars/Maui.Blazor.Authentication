@@ -6,7 +6,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddDefaultHttpClient(this IServiceCollection services, string authorityUrl, Action<HttpMessageHandlerBuilder>? configureBuilder = null)
+    public static IServiceCollection AddDefaultHttpClient(this IServiceCollection services, string authorityUrl, Func<IServiceProvider, HttpMessageHandler>? configureHandler = null)
     {
         services.AddTransient(p =>
         {
@@ -23,12 +23,14 @@ public static class ServiceCollectionExtensions
         .AddHttpClient("default")
         .ConfigureHttpClient(client => client.BaseAddress = new Uri(authorityUrl))
         .AddHttpMessageHandler<AuthorizationMessageHandler>()
-        .ConfigureHttpMessageHandlerBuilder(builder =>
+        .ConfigurePrimaryHttpMessageHandler(provider =>
         {
-            if (configureBuilder is not null)
+            if (configureHandler is not null)
             {
-                configureBuilder(builder);
+                return configureHandler(provider);
             }
+
+            return provider.GetRequiredService<HttpMessageHandler>();
         });
 
         return services;
