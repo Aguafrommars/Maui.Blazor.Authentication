@@ -25,7 +25,7 @@ builder.Services.AddMauiOidcAuthentication(options =>
   providerOptions.PostLogoutRedirectUri = "mauiblazorsample://authentication/logout-callback";
   providerOptions.DefaultScopes.Add("offline_access");
   providerOptions.DefaultScopes.Add("scope1");
-}, ConfigureHttpMessgeBuilder);
+}, GetHttpMessgeHandler);
 ```
 
 `AddMauiOidcAuthentication` adds [`AuthenticationStateProvider service`](https://learn.microsoft.com/en-us/aspnet/core/blazor/security/#authenticationstateprovider-service) in DI so you can use [`AuthenticationState, CascadingAuthenticationState`](https://learn.microsoft.com/en-us/aspnet/core/blazor/security/#expose-the-authentication-state-as-a-cascading-parameter) and [`AuthorizationMessageHandler`](https://learn.microsoft.com/en-us/aspnet/core/blazor/security/webassembly/additional-scenarios#attach-tokens-to-outgoing-requests)
@@ -203,7 +203,7 @@ Add following protocol extension in *Package.appxmanifest* file.
 To configure the internal `HttpMessageHandler` to trust self signed certificate or local url you can provide a configuration method like this one:
 
 ```c#
-private static void ConfigureHttpMessgeBuilder(HttpMessageHandlerBuilder builder)
+private static void GetHttpMessgeHandler(HttpMessageHandlerBuilder builder)
 {
 #if IOS
     var handler = new NSUrlSessionHandler();

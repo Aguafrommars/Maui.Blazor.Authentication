@@ -33,7 +33,7 @@ public class ServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddMauiOidcAuthentication_should_configure_http_message_builder()
+    public void AddMauiOidcAuthentication_should_configure_http_message_handler()
     {
         var called = false;
         var services = new ServiceCollection();
@@ -47,7 +47,7 @@ public class ServiceCollectionExtensionsTest
             }, provider =>
             {
                 called = true;
-                return provider.GetRequiredService<HttpMessageHandler>();
+                return provider.GetRequiredService<IHttpMessageHandlerFactory>().CreateHandler();
             });
 
         var provider = services.BuildServiceProvider();

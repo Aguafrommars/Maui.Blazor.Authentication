@@ -35,28 +35,29 @@ public static class MauiProgram
                 providerOptions.PostLogoutRedirectUri = "mauiblazorsample://authentication/logout-callback";
                 providerOptions.DefaultScopes.Add("offline_access");
                 providerOptions.DefaultScopes.Add("scope1");
-            }, ConfigureHttpMessgeBuilder);
+            }, GetHttpMessgeHandler);
 
-        services.AddDefaultHttpClient(authorityUrl, ConfigureHttpMessgeBuilder);
+        services.AddDefaultHttpClient(authorityUrl, GetHttpMessgeHandler);
 
         return builder.Build();
     }
 
-    private static HttpMessageHandler ConfigureHttpMessgeBuilder(IServiceProvider provider)
+    private static HttpMessageHandler GetHttpMessgeHandler(IServiceProvider provider)
     {
 #if IOS
-        var handler = new NSUrlSessionHandler();
-        handler.TrustOverrideForUrl = (sender, url, trust) =>
+        return new NSUrlSessionHandler
         {
-            if (url.StartsWith("https://localhost:5001"))
+            TrustOverrideForUrl = (sender, url, trust) =>
             {
-                return true;
+                if (url.StartsWith("https://localhost:5001"))
+                {
+                    return true;
+                }
+                return false;
             }
-            return false;
         };
-        return handler;
 #else
-        var handler = provider.GetService<HttpMessageHandler>() as HttpClientHandler ?? new HttpClientHandler();
+        var handler = provider.GetService<IHttpMessageHandlerFactory>()?.CreateHandler() as HttpClientHandler ?? new HttpClientHandler();
         handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) =>
         {
             if (cert != null && cert.Issuer.Equals("CN=localhost"))
