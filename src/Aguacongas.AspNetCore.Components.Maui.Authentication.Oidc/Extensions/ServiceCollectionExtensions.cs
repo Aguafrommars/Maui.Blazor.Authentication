@@ -20,13 +20,13 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
     /// <param name="configure">An action that will configure the <see cref="RemoteAuthenticationOptions{TProviderOptions}"/>.</param>
-    /// <param name="configureBuilder">An action that will configure the <see cref="HttpMessageHandlerBuilder"/>.</param>
+    /// <param name="configureHandler">An action that will configure the <see cref="HttpMessageHandler"/>.</param>
     /// <returns>The <see cref="IServiceCollection"/> where the services were registered.</returns>
     public static IRemoteAuthenticationBuilder<RemoteAuthenticationState, RemoteUserAccount> AddMauiOidcAuthentication(
         this IServiceCollection services, Action<RemoteAuthenticationOptions<OidcProviderOptions>> configure,
-        Action<HttpMessageHandlerBuilder> configureBuilder = null)
+        Func<IServiceProvider, HttpMessageHandler> configureHandler = null)
     {
-        return AddMauiOidcAuthentication<RemoteAuthenticationState>(services, configure, configureBuilder);
+        return AddMauiOidcAuthentication<RemoteAuthenticationState>(services, configure, configureHandler);
     }
 
     /// <summary>
@@ -35,14 +35,14 @@ public static class ServiceCollectionExtensions
     /// <typeparam name="TRemoteAuthenticationState">The type of the remote authentication state.</typeparam>
     /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
     /// <param name="configure">An action that will configure the <see cref="RemoteAuthenticationOptions{TProviderOptions}"/>.</param>
-    /// <param name="configureBuilder">An action that will configure the <see cref="HttpMessageHandlerBuilder"/>.</param>
+    /// <param name="configureHandler">An action that will configure the <see cref="HttpMessageHandler"/>.</param>
     /// <returns>The <see cref="IServiceCollection"/> where the services were registered.</returns>
     public static IRemoteAuthenticationBuilder<TRemoteAuthenticationState, RemoteUserAccount> AddMauiOidcAuthentication<TRemoteAuthenticationState>(
         this IServiceCollection services, Action<RemoteAuthenticationOptions<OidcProviderOptions>> configure,
-        Action<HttpMessageHandlerBuilder> configureBuilder = null)
+        Func<IServiceProvider, HttpMessageHandler> configureHandler = null)
         where TRemoteAuthenticationState : RemoteAuthenticationState, new()
     {
-        return AddMauiOidcAuthentication<TRemoteAuthenticationState, RemoteUserAccount>(services, configure, configureBuilder);
+        return AddMauiOidcAuthentication<TRemoteAuthenticationState, RemoteUserAccount>(services, configure, configureHandler);
     }
 
     /// <summary>
@@ -52,7 +52,7 @@ public static class ServiceCollectionExtensions
     /// <typeparam name="TAccount">The account type.</typeparam>
     /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
     /// <param name="configure">An action that will configure the <see cref="RemoteAuthenticationOptions{TProviderOptions}"/>.</param>
-    /// <param name="configureBuilder">An action that will configure the <see cref="HttpMessageHandlerBuilder"/>.</param>
+    /// <param name="configureHandler">An action that will configure the <see cref="HttpMessageHandler"/>.</param>
     /// <returns>The <see cref="IServiceCollection"/> where the services were registered.</returns>
     public static IRemoteAuthenticationBuilder<TRemoteAuthenticationState, TAccount>
         AddMauiOidcAuthentication<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors |
@@ -62,14 +62,14 @@ public static class ServiceCollectionExtensions
             DynamicallyAccessedMemberTypes.PublicFields |
             DynamicallyAccessedMemberTypes.PublicProperties)] TAccount>(this IServiceCollection services,
             Action<RemoteAuthenticationOptions<OidcProviderOptions>> configure,
-            Action<HttpMessageHandlerBuilder> configureBuilder = null)
+            Func<IServiceProvider, HttpMessageHandler> configureHandler = null)
         where TRemoteAuthenticationState : RemoteAuthenticationState, new()
         where TAccount : RemoteUserAccount
     {
         services.TryAddScoped<AuthenticationStateProvider, OidcAuthenticationService<TRemoteAuthenticationState>>();
         services.TryAddTransient<IAuthenticationStore, AuthenticationStore>();
 #if WINDOWS
-	    services.AddScoped<IWebAuthenticator>(p => WinUIEx.WebAuthenticator.Instance);
+        services.AddScoped<IWebAuthenticator>(p => WinUIEx.WebAuthenticator.Instance);
 #else
         services.TryAddScoped(sp => WebAuthenticator.Default);
 #endif
@@ -95,12 +95,14 @@ public static class ServiceCollectionExtensions
         });
 
         services.AddHttpClient(nameof(OidcClient))
-            .ConfigureHttpMessageHandlerBuilder(builder =>
+            .ConfigurePrimaryHttpMessageHandler(provider =>
             {
-                if (configureBuilder is not null)
+                if (configureHandler is not null)
                 {
-                    configureBuilder(builder);
+                    return configureHandler(provider);
                 }
+
+                return provider.GetService<HttpMessageHandler>();
             });
 
         return services.AddOidcAuthentication<TRemoteAuthenticationState, TAccount>(configure);

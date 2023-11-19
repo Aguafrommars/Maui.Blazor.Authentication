@@ -5,44 +5,44 @@ namespace Maui.Blazor.Client;
 
 public static class MauiProgram
 {
-	public static MauiApp CreateMauiApp()
-	{
-		var builder = MauiApp.CreateBuilder();
-		builder
-			.UseMauiApp<App>()
-			.ConfigureFonts(fonts =>
-			{
-				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-			});
+    public static MauiApp CreateMauiApp()
+    {
+        var builder = MauiApp.CreateBuilder();
+        builder
+            .UseMauiApp<App>()
+            .ConfigureFonts(fonts =>
+            {
+                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+            });
 
-		var services = builder.Services;
-		services.AddMauiBlazorWebView();
+        var services = builder.Services;
+        services.AddMauiBlazorWebView();
 
 #if DEBUG
-		services.AddBlazorWebViewDeveloperTools();
-		builder.Logging.AddDebug();
+        services.AddBlazorWebViewDeveloperTools();
+        builder.Logging.AddDebug();
 #endif
 
-		string authorityUrl =
-			DeviceInfo.Platform == DevicePlatform.Android ? "https://10.0.2.2:5001" : "https://localhost:5001";
+        string authorityUrl =
+            DeviceInfo.Platform == DevicePlatform.Android ? "https://10.0.2.2:5001" : "https://localhost:5001";
 
         services.AddMauiOidcAuthentication(options =>
-			{
-				var providerOptions = options.ProviderOptions;
-				providerOptions.Authority = authorityUrl;
-				providerOptions.ClientId = "mauiblazorsample";
-				providerOptions.RedirectUri = "mauiblazorsample://authentication/login-callback";
-				providerOptions.PostLogoutRedirectUri = "mauiblazorsample://authentication/logout-callback";
-				providerOptions.DefaultScopes.Add("offline_access");
+            {
+                var providerOptions = options.ProviderOptions;
+                providerOptions.Authority = authorityUrl;
+                providerOptions.ClientId = "mauiblazorsample";
+                providerOptions.RedirectUri = "mauiblazorsample://authentication/login-callback";
+                providerOptions.PostLogoutRedirectUri = "mauiblazorsample://authentication/logout-callback";
+                providerOptions.DefaultScopes.Add("offline_access");
                 providerOptions.DefaultScopes.Add("scope1");
             }, ConfigureHttpMessgeBuilder);
 
-		services.AddDefaultHttpClient(authorityUrl, ConfigureHttpMessgeBuilder);
+        services.AddDefaultHttpClient(authorityUrl, ConfigureHttpMessgeBuilder);
 
         return builder.Build();
-	}
+    }
 
-    private static void ConfigureHttpMessgeBuilder(HttpMessageHandlerBuilder builder)
+    private static HttpMessageHandler ConfigureHttpMessgeBuilder(IServiceProvider provider)
     {
 #if IOS
         var handler = new NSUrlSessionHandler();
@@ -54,9 +54,9 @@ public static class MauiProgram
             }
             return false;
         };
-		builder.PrimaryHandler = handler;
+        return handler;
 #else
-		var handler = builder.PrimaryHandler as HttpClientHandler;
+        var handler = provider.GetService<HttpMessageHandler>() as HttpClientHandler ?? new HttpClientHandler();
         handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) =>
         {
             if (cert != null && cert.Issuer.Equals("CN=localhost"))
@@ -65,6 +65,7 @@ public static class MauiProgram
             }
             return errors == System.Net.Security.SslPolicyErrors.None;
         };
+        return handler;
 #endif
     }
 }

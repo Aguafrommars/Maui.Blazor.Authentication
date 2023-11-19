@@ -24,6 +24,7 @@ install:
   - ps: .\dotnet-install.ps1 -Version $env:donetsdk
   - ps: dotnet tool install --global dotnet-sonarscanner
   - cmd: nuget install ReportGenerator -ExcludeVersion
+  - cmd: choco install android-sdk
   - ps: ./appveyorinit.ps1
 build_script:
   - ps: ./build.ps1
