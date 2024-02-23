@@ -30,5 +30,6 @@ appveyor SetVariable -Name Version -Value $nextversion
 appveyor UpdateBuild -Version $nextversion
 appveyor AddMessage "Version = $nextversion"
 
+dotnet workload update
 dotnet workload restore
 dotnet restore -p:PublishReadyToRun=true
