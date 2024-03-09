@@ -30,5 +30,6 @@ appveyor SetVariable -Name Version -Value $nextversion
 appveyor UpdateBuild -Version $nextversion
 appveyor AddMessage "Version = $nextversion"
 
+dotnet workload install maui
 dotnet workload restore
 dotnet restore -p:PublishReadyToRun=true

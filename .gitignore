@@ -353,3 +353,4 @@ MigrationBackup/
 
 # ReportGenerator 
 /ReportGenerator
+/global.json
