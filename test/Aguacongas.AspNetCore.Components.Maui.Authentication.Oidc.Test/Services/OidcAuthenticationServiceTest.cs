@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.Extensions.Options;
 using Moq;
+using System.Net.Http.Headers;
 using IBrowser = IdentityModel.OidcClient.Browser.IBrowser;
 
 namespace Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Test.Services;
@@ -72,7 +73,7 @@ public class OidcAuthenticationServiceTest
                             }),
                             "https://exemple.com/connect/userinfo" => Task.FromResult(new HttpResponseMessage
                             {
-                                Content = new StringContent(File.ReadAllText("userinfo.json"))
+                                Content = new StringContent(File.ReadAllText("userinfo.json"), new MediaTypeHeaderValue("application/json"))
                             }),
                             _ => throw new InvalidOperationException($"Uri unknow {r.RequestUri}"),
                         };
@@ -116,14 +117,14 @@ public class OidcAuthenticationServiceTest
         {
             AccessTokenExpiration = DateTimeOffset.UtcNow.AddMinutes(-10),
             RefreshToken = Guid.NewGuid().ToString(),
-            Claims = new[]
-            {
+            Claims =
+            [
                 new ClaimEntity
                 {
                     Type = "name",
                     Value = "test"
                 }
-            },
+            ],
             AuthenticationType = "Bearer",
             NameClaimType = "name",
         });
@@ -157,7 +158,7 @@ public class OidcAuthenticationServiceTest
                             }),
                             "https://exemple.com/connect/userinfo" => Task.FromResult(new HttpResponseMessage
                             {
-                                Content = new StringContent(File.ReadAllText("userinfo.json"))
+                                Content = new StringContent(File.ReadAllText("userinfo.json"), new MediaTypeHeaderValue("application/json")),
                             }),
                             _ => throw new InvalidOperationException($"Uri unknow {r.RequestUri}"),
                         };
@@ -235,7 +236,7 @@ public class OidcAuthenticationServiceTest
                             }),
                             "https://exemple.com/connect/userinfo" => Task.FromResult(new HttpResponseMessage
                             {
-                                Content = new StringContent(File.ReadAllText("userinfo.json"))
+                                Content = new StringContent(File.ReadAllText("userinfo.json"), new MediaTypeHeaderValue("application/json"))
                             }),
                             _ => throw new InvalidOperationException($"Uri unknow {r.RequestUri}"),
                         };
@@ -296,7 +297,7 @@ public class OidcAuthenticationServiceTest
                             }),
                             "https://exemple.com/connect/userinfo" => Task.FromResult(new HttpResponseMessage
                             {
-                                Content = new StringContent(File.ReadAllText("userinfo.json"))
+                                Content = new StringContent(File.ReadAllText("userinfo.json"), new MediaTypeHeaderValue("application/json"))
                             }),
                             _ => throw new InvalidOperationException($"Uri unknow {r.RequestUri}"),
                         };
@@ -364,7 +365,7 @@ public class OidcAuthenticationServiceTest
                             }),
                             "https://exemple.com/connect/userinfo" => Task.FromResult(new HttpResponseMessage
                             {
-                                Content = new StringContent(File.ReadAllText("userinfo.json"))
+                                Content = new StringContent(File.ReadAllText("userinfo.json"), new MediaTypeHeaderValue("application/json"))
                             }),
                             _ => throw new InvalidOperationException($"Uri unknow {r.RequestUri}"),
                         };
