@@ -3,7 +3,7 @@ using Duende.IdentityServer;
 using Duende.IdentityServer.Events;
 using Duende.IdentityServer.Services;
 using Duende.IdentityServer.Test;
-using IdentityModel;
+using Duende.IdentityModel;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,42 +13,29 @@ namespace OidcAndApiServer.Pages.ExternalLogin;
 
 [AllowAnonymous]
 [SecurityHeaders]
-public class Callback : PageModel
+public class Callback(
+    IIdentityServerInteractionService interaction,
+    IEventService events,
+    ILogger<Callback> logger,
+    TestUserStore users = null) : PageModel
 {
-    private readonly TestUserStore _users;
-    private readonly IIdentityServerInteractionService _interaction;
-    private readonly ILogger<Callback> _logger;
-    private readonly IEventService _events;
+    private readonly TestUserStore _users = users ?? throw new InvalidOperationException("Please call 'AddTestUsers(TestUsers.Users)' on the IIdentityServerBuilder in Startup or remove the TestUserStore from the AccountController.");
 
-    public Callback(
-        IIdentityServerInteractionService interaction,
-        IEventService events,
-        ILogger<Callback> logger,
-        TestUserStore users = null)
-    {
-        // this is where you would plug in your own custom identity management library (e.g. ASP.NET Identity)
-        _users = users ?? throw new Exception("Please call 'AddTestUsers(TestUsers.Users)' on the IIdentityServerBuilder in Startup or remove the TestUserStore from the AccountController.");
-
-        _interaction = interaction;
-        _logger = logger;
-        _events = events;
-    }
-        
     public async Task<IActionResult> OnGet()
     {
         // read external identity from the temporary cookie
         var result = await HttpContext.AuthenticateAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme);
         if (result?.Succeeded != true)
         {
-            throw new Exception("External authentication error");
+            throw new InvalidOperationException("External authentication error");
         }
 
         var externalUser = result.Principal;
 
-        if (_logger.IsEnabled(LogLevel.Debug))
+        if (logger.IsEnabled(LogLevel.Debug))
         {
             var externalClaims = externalUser.Claims.Select(c => $"{c.Type}: {c.Value}");
-            _logger.LogDebug("External claims: {@claims}", externalClaims);
+            logger.LogDebug("External claims: {@Claims}", externalClaims);
         }
 
         // lookup our user and external provider info
@@ -57,7 +44,7 @@ public class Callback : PageModel
         // depending on the external provider, some other claim type might be used
         var userIdClaim = externalUser.FindFirst(JwtClaimTypes.Subject) ??
                           externalUser.FindFirst(ClaimTypes.NameIdentifier) ??
-                          throw new Exception("Unknown userid");
+                          throw new InvalidOperationException("Unknown userid");
 
         var provider = result.Properties.Items["scheme"];
         var providerUserId = userIdClaim.Value;
@@ -73,7 +60,7 @@ public class Callback : PageModel
             // remove the user id claim so we don't include it as an extra claim if/when we provision the user
             var claims = externalUser.Claims.ToList();
             claims.Remove(userIdClaim);
-            user = _users.AutoProvisionUser(provider, providerUserId, claims.ToList());
+            user = _users.AutoProvisionUser(provider, providerUserId, [.. claims]);
         }
 
         // this allows us to collect any additional claims or properties
@@ -100,17 +87,14 @@ public class Callback : PageModel
         var returnUrl = result.Properties.Items["returnUrl"] ?? "~/";
 
         // check if external login is in the context of an OIDC request
-        var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
-        await _events.RaiseAsync(new UserLoginSuccessEvent(provider, providerUserId, user.SubjectId, user.Username, true, context?.Client.ClientId));
+        var context = await interaction.GetAuthorizationContextAsync(returnUrl);
+        await events.RaiseAsync(new UserLoginSuccessEvent(provider, providerUserId, user.SubjectId, user.Username, true, context?.Client.ClientId));
 
-        if (context != null)
+        if (context != null && context.IsNativeClient())
         {
-            if (context.IsNativeClient())
-            {
-                // The client is native, so this change in how to
-                // return the response is for better UX for the end user.
-                return this.LoadingPage(returnUrl);
-            }
+            // The client is native, so this change in how to
+            // return the response is for better UX for the end user.
+            return this.LoadingPage(returnUrl);
         }
 
         return Redirect(returnUrl);
@@ -118,7 +102,7 @@ public class Callback : PageModel
 
     // if the external login is OIDC-based, there are certain things we need to preserve to make logout work
     // this will be different for WS-Fed, SAML2p or other protocols
-    private void CaptureExternalLoginContext(AuthenticateResult externalResult, List<Claim> localClaims, AuthenticationProperties localSignInProps)
+    private static void CaptureExternalLoginContext(AuthenticateResult externalResult, List<Claim> localClaims, AuthenticationProperties localSignInProps)
     {
         // if the external system sent a session id claim, copy it over
         // so we can use it for single sign-out
@@ -132,7 +116,7 @@ public class Callback : PageModel
         var idToken = externalResult.Properties.GetTokenValue("id_token");
         if (idToken != null)
         {
-            localSignInProps.StoreTokens(new[] { new AuthenticationToken { Name = "id_token", Value = idToken } });
+            localSignInProps.StoreTokens([new AuthenticationToken { Name = "id_token", Value = idToken }]);
         }
     }
 }
