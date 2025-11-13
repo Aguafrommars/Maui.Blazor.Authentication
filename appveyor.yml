@@ -24,11 +24,17 @@ install:
   - ps: dotnet tool install --global dotnet-sonarscanner
   - ps: .\dotnet-install.ps1 -Version $env:donetsdk
   - cmd: nuget install ReportGenerator -ExcludeVersion
-  - ps: ./appveyorinit.ps1
-  # Met à jour le SDK Manager
+  - ps: |
+      Invoke-WebRequest https://dl.google.com/android/repository/commandlinetools-win-11076708_latest.zip -OutFile cmdline-tools.zip
+      Expand-Archive cmdline-tools.zip -DestinationPath C:\Android\
+      mkdir C:\Android\cmdline-tools\latest
+      Move-Item C:\Android\cmdline-tools\bin C:\Android\cmdline-tools\latest\bin
   - cmd: sdkmanager --update
-  # Accepte toutes les licences Android SDK
   - cmd: yes | sdkmanager --licenses
+  - setx ANDROID_HOME "C:\Android"
+  - setx ANDROID_SDK_ROOT "C:\Android"
+  - setx PATH "%PATH%;C:\Android\cmdline-tools\latest\bin;C:\Android\platform-tools"
+  - ps: ./appveyorinit.ps1
 build_script:
   - ps: ./build.ps1
 test_script:
