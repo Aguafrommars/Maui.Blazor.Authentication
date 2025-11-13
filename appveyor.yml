@@ -29,11 +29,11 @@ install:
       Expand-Archive cmdline-tools.zip -DestinationPath C:\Android\
       mkdir C:\Android\cmdline-tools\latest
       Move-Item C:\Android\cmdline-tools\bin C:\Android\cmdline-tools\latest\bin
-  - cmd: sdkmanager --update
-  - cmd: yes | sdkmanager --licenses
   - setx ANDROID_HOME "C:\Android"
   - setx ANDROID_SDK_ROOT "C:\Android"
   - setx PATH "%PATH%;C:\Android\cmdline-tools\latest\bin;C:\Android\platform-tools"
+  - cmd: sdkmanager --update
+  - cmd: yes | sdkmanager --licenses
   - ps: ./appveyorinit.ps1
 build_script:
   - ps: ./build.ps1
