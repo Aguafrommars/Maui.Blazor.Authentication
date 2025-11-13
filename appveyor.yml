@@ -32,9 +32,11 @@ install:
   - setx ANDROID_HOME "C:\Android"
   - setx ANDROID_SDK_ROOT "C:\Android"
   - setx PATH "%PATH%;C:\Android\cmdline-tools\latest\bin;C:\Android\platform-tools"
-  - cmd: sdkmanager --update
-  - cmd: yes | sdkmanager --licenses
   - ps: ./appveyorinit.ps1
+before_build:
+  - cmd: C:\Android\cmdline-tools\latest\bin\sdkmanager.bat --list
+  - cmd: yes | C:\Android\cmdline-tools\latest\bin\sdkmanager.bat --licenses
+  - cmd: C:\Android\cmdline-tools\latest\bin\sdkmanager.bat "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 build_script:
   - ps: ./build.ps1
 test_script:
