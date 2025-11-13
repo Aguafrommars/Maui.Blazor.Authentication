@@ -25,6 +25,10 @@ install:
   - ps: .\dotnet-install.ps1 -Version $env:donetsdk
   - cmd: nuget install ReportGenerator -ExcludeVersion
   - ps: ./appveyorinit.ps1
+  # Met à jour le SDK Manager
+  - cmd: sdkmanager --update
+  # Accepte toutes les licences Android SDK
+  - cmd: yes | sdkmanager --licenses
 build_script:
   - ps: ./build.ps1
 test_script:
