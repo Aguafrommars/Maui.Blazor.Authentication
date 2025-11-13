@@ -21,8 +21,8 @@ install:
   - ps: Install-Product node 20 x64
   - ps: dotnet tool install --global GitVersion.Tool
   - ps: dotnet gitversion /l console /output buildserver
-  - ps: .\dotnet-install.ps1 -Version $env:donetsdk
   - ps: dotnet tool install --global dotnet-sonarscanner
+  - ps: .\dotnet-install.ps1 -Version $env:donetsdk
   - cmd: nuget install ReportGenerator -ExcludeVersion
   - ps: ./appveyorinit.ps1
 build_script:
