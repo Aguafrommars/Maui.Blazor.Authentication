@@ -28,7 +28,7 @@ install:
       Invoke-WebRequest https://dl.google.com/android/repository/commandlinetools-win-11076708_latest.zip -OutFile cmdline-tools.zip
       Expand-Archive cmdline-tools.zip -DestinationPath C:\Android\
       mkdir C:\Android\cmdline-tools\latest
-      Move-Item C:\Android\cmdline-tools\cmdline-tools\* C:\Android\cmdline-tools\latest\ -For
+      Move-Item C:\Android\cmdline-tools\* C:\Android\cmdline-tools\latest\ -For
   - setx ANDROID_HOME "C:\Android"
   - setx ANDROID_SDK_ROOT "C:\Android"
   - setx PATH "%PATH%;C:\Android\cmdline-tools\latest\bin;C:\Android\platform-tools"
