@@ -24,9 +24,9 @@ if ($env:CI -And ((-Not $env:APPVEYOR_PULL_REQUEST_NUMBER) -Or ($env:APPVEYOR_PU
 	dotnet sonarscanner begin /k:Aguafrommars_Maui.Blazor.Authentication -o:aguafrommars -d:sonar.host.url=https://sonarcloud.io -d:sonar.login=$env:sonarqube -d:sonar.coverageReportPaths=coverage\SonarQube.xml $prArgs -v:$env:Version
 }
 
-Write-Host "dotnet test -c Release --settings coverletArgs.runsettings  -v q"
+Write-Host "dotnet test test\Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Test\Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Test.csproj -c Release --settings coverletArgs.runsettings  -v q"
 
-dotnet test -c Release --collect:"XPlat Code Coverage" --settings coverletArgs.runsettings -v q
+dotnet test test\Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Test\Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Test.csproj -c Release --collect:"XPlat Code Coverage" --settings coverletArgs.runsettings -v q 
 
 if ($LASTEXITCODE -ne 0) {
 	$result = $LASTEXITCODE

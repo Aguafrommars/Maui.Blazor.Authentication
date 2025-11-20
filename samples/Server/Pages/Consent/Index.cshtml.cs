@@ -1,9 +1,9 @@
+using Duende.IdentityModel;
 using Duende.IdentityServer.Events;
 using Duende.IdentityServer.Extensions;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
 using Duende.IdentityServer.Validation;
-using IdentityModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -11,23 +11,12 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace OidcAndApiServer.Pages.Consent;
 
 [Authorize]
-[SecurityHeadersAttribute]
-public class Index : PageModel
+[SecurityHeaders]
+public class Index(
+    IIdentityServerInteractionService interaction,
+    IEventService events,
+    ILogger<Index> logger) : PageModel
 {
-    private readonly IIdentityServerInteractionService _interaction;
-    private readonly IEventService _events;
-    private readonly ILogger<Index> _logger;
-
-    public Index(
-        IIdentityServerInteractionService interaction,
-        IEventService events,
-        ILogger<Index> logger)
-    {
-        _interaction = interaction;
-        _events = events;
-        _logger = logger;
-    }
-
     public ViewModel View { get; set; }
         
     [BindProperty]
@@ -52,7 +41,7 @@ public class Index : PageModel
     public async Task<IActionResult> OnPost()
     {
         // validate return url is still valid
-        var request = await _interaction.GetAuthorizationContextAsync(Input.ReturnUrl);
+        var request = await interaction.GetAuthorizationContextAsync(Input.ReturnUrl);
         if (request == null) return RedirectToPage("/Home/Error/Index");
 
         ConsentResponse grantedConsent = null;
@@ -63,7 +52,7 @@ public class Index : PageModel
             grantedConsent = new ConsentResponse { Error = AuthorizationError.AccessDenied };
 
             // emit event
-            await _events.RaiseAsync(new ConsentDeniedEvent(User.GetSubjectId(), request.Client.ClientId, request.ValidatedResources.RawScopeValues));
+            await events.RaiseAsync(new ConsentDeniedEvent(User.GetSubjectId(), request.Client.ClientId, request.ValidatedResources.RawScopeValues));
         }
         // user clicked 'yes' - validate the data
         else if (Input?.Button == "yes")
@@ -72,7 +61,7 @@ public class Index : PageModel
             if (Input.ScopesConsented != null && Input.ScopesConsented.Any())
             {
                 var scopes = Input.ScopesConsented;
-                if (ConsentOptions.EnableOfflineAccess == false)
+                if (!ConsentOptions.EnableOfflineAccess)
                 {
                     scopes = scopes.Where(x => x != Duende.IdentityServer.IdentityServerConstants.StandardScopes.OfflineAccess);
                 }
@@ -80,12 +69,12 @@ public class Index : PageModel
                 grantedConsent = new ConsentResponse
                 {
                     RememberConsent = Input.RememberConsent,
-                    ScopesValuesConsented = scopes.ToArray(),
+                    ScopesValuesConsented = [.. scopes],
                     Description = Input.Description
                 };
 
                 // emit event
-                await _events.RaiseAsync(new ConsentGrantedEvent(User.GetSubjectId(), request.Client.ClientId, request.ValidatedResources.RawScopeValues, grantedConsent.ScopesValuesConsented, grantedConsent.RememberConsent));
+                await events.RaiseAsync(new ConsentGrantedEvent(User.GetSubjectId(), request.Client.ClientId, request.ValidatedResources.RawScopeValues, grantedConsent.ScopesValuesConsented, grantedConsent.RememberConsent));
             }
             else
             {
@@ -100,10 +89,10 @@ public class Index : PageModel
         if (grantedConsent != null)
         {
             // communicate outcome of consent back to identityserver
-            await _interaction.GrantConsentAsync(request, grantedConsent);
+            await interaction.GrantConsentAsync(request, grantedConsent);
 
             // redirect back to authorization endpoint
-            if (request.IsNativeClient() == true)
+            if (request.IsNativeClient())
             {
                 // The client is native, so this change in how to
                 // return the response is for better UX for the end user.
@@ -120,20 +109,20 @@ public class Index : PageModel
 
     private async Task<ViewModel> BuildViewModelAsync(string returnUrl, InputModel model = null)
     {
-        var request = await _interaction.GetAuthorizationContextAsync(returnUrl);
+        var request = await interaction.GetAuthorizationContextAsync(returnUrl);
         if (request != null)
         {
-            return CreateConsentViewModel(model, returnUrl, request);
+            return CreateConsentViewModel(model, request);
         }
         else
         {
-            _logger.LogError("No consent request matching request: {0}", returnUrl);
+            logger.LogError("No consent request matching request: {ReturnUrl}", returnUrl);
         }
         return null;
     }
 
     private ViewModel CreateConsentViewModel(
-        InputModel model, string returnUrl,
+        InputModel model,
         AuthorizationRequest request)
     {
         var vm = new ViewModel
@@ -141,12 +130,13 @@ public class Index : PageModel
             ClientName = request.Client.ClientName ?? request.Client.ClientId,
             ClientUrl = request.Client.ClientUri,
             ClientLogoUrl = request.Client.LogoUri,
-            AllowRememberConsent = request.Client.AllowRememberConsent
+            AllowRememberConsent = request.Client.AllowRememberConsent,
+            IdentityScopes = [.. request.ValidatedResources
+                .Resources
+                .IdentityResources
+                .Select(x => CreateScopeViewModel(x, model?.ScopesConsented == null ||
+                    model.ScopesConsented?.Contains(x.Name) == true))]
         };
-
-        vm.IdentityScopes = request.ValidatedResources.Resources.IdentityResources
-            .Select(x => CreateScopeViewModel(x, model?.ScopesConsented == null || model.ScopesConsented?.Contains(x.Name) == true))
-            .ToArray();
 
         var resourceIndicators = request.Parameters.GetValues(OidcConstants.AuthorizeRequest.Resource) ?? Enumerable.Empty<string>();
         var apiResources = request.ValidatedResources.Resources.ApiResources.Where(x => resourceIndicators.Contains(x.Name));
@@ -158,12 +148,13 @@ public class Index : PageModel
             if (apiScope != null)
             {
                 var scopeVm = CreateScopeViewModel(parsedScope, apiScope, model == null || model.ScopesConsented?.Contains(parsedScope.RawValue) == true);
-                scopeVm.Resources = apiResources.Where(x => x.Scopes.Contains(parsedScope.ParsedName))
+                scopeVm.Resources = [.. apiResources
+                    .Where(x => x.Scopes.Contains(parsedScope.ParsedName))
                     .Select(x => new ResourceViewModel
                     {
                         Name = x.Name,
                         DisplayName = x.DisplayName ?? x.Name,
-                    }).ToArray();
+                    })];
                 apiScopes.Add(scopeVm);
             }
         }
@@ -176,7 +167,7 @@ public class Index : PageModel
         return vm;
     }
 
-    private ScopeViewModel CreateScopeViewModel(IdentityResource identity, bool check)
+    private static ScopeViewModel CreateScopeViewModel(IdentityResource identity, bool check)
     {
         return new ScopeViewModel
         {
@@ -210,7 +201,7 @@ public class Index : PageModel
         };
     }
 
-    private ScopeViewModel GetOfflineAccessScope(bool check)
+    private static ScopeViewModel GetOfflineAccessScope(bool check)
     {
         return new ScopeViewModel
         {

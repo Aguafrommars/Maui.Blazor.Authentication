@@ -33,3 +33,9 @@ appveyor AddMessage "Version = $nextversion"
 dotnet workload install maui
 dotnet workload restore
 dotnet restore -p:PublishReadyToRun=true
+
+cd "$env:ANDROID_SDK_ROOT/tools/bin"
+./sdkmanager --licenses
+
+
+

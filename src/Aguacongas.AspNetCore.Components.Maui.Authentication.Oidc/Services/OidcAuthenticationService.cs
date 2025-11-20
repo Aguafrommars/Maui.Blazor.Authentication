@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.Extensions.Options;
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
 
 namespace Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Services;
@@ -14,48 +15,40 @@ namespace Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Services;
 /// OIDC authentication service
 /// </summary>
 /// <typeparam name="TRemoteAuthenticationState"></typeparam>
-public class OidcAuthenticationService<TRemoteAuthenticationState> :
+/// <remarks>
+/// Initialize a new instance of <see cref="OidcAuthenticationService{TRemoteAuthenticationState}"/>
+/// </remarks>
+/// <param name="oidcClient">An <see cref="OidcClient"/></param>
+/// <param name="store">A <see cref="IAuthenticationStore"/></param>
+/// <param name="navigation">A <see cref="NavigationManager"/></param>
+/// <param name="options"><see cref="OidcProviderOptions"/></param>
+public class OidcAuthenticationService<[DynamicallyAccessedMembers(
+        DynamicallyAccessedMemberTypes.PublicConstructors |
+        DynamicallyAccessedMemberTypes.PublicFields |
+        DynamicallyAccessedMemberTypes.PublicProperties)] TRemoteAuthenticationState>(OidcClient oidcClient,
+    IAuthenticationStore store,
+    NavigationManager navigation,
+    IOptionsSnapshot<RemoteAuthenticationOptions<OidcProviderOptions>> options) :
         AuthenticationStateProvider,
         IRemoteAuthenticationService<TRemoteAuthenticationState>,
         IAccessTokenProvider
         where TRemoteAuthenticationState : RemoteAuthenticationState
 {
-    private readonly OidcClient _oidcClient;
-    private readonly IAuthenticationStore _store;
-    private readonly IOptionsSnapshot<RemoteAuthenticationOptions<OidcProviderOptions>> _options;
-    private readonly NavigationManager _navigation;
-    private readonly Dictionary<string, AuthenticationEntity> _authenticationCache = new();
+    private readonly IOptionsSnapshot<RemoteAuthenticationOptions<OidcProviderOptions>> _options = options;
+    private readonly Dictionary<string, AuthenticationEntity> _authenticationCache = [];
     private ClaimsPrincipal _principal = new();
 
     private DateTimeOffset ExpireAt
     {
         get
         {
-            if (_authenticationCache.TryGetValue(_oidcClient.Options.Scope, out AuthenticationEntity entity))
+            if (_authenticationCache.TryGetValue(oidcClient.Options.Scope, out AuthenticationEntity entity))
             {
                 return entity.AccessTokenExpiration;
             }
 
             return DateTimeOffset.MinValue;
         }
-    }
-
-    /// <summary>
-    /// Initialize a new instance of <see cref="OidcAuthenticationService{TRemoteAuthenticationState}"/>
-    /// </summary>
-    /// <param name="oidcClient">An <see cref="OidcClient"/></param>
-    /// <param name="store">A <see cref="IAuthenticationStore"/></param>
-    /// <param name="navigation">A <see cref="NavigationManager"/></param>
-    /// <param name="options"><see cref="OidcProviderOptions"/></param>
-    public OidcAuthenticationService(OidcClient oidcClient,
-        IAuthenticationStore store,
-        NavigationManager navigation,
-        IOptionsSnapshot<RemoteAuthenticationOptions<OidcProviderOptions>> options)
-    {
-        _oidcClient = oidcClient;
-        _store = store;
-        _navigation = navigation;
-        _options = options;
     }
 
     /// <inheritdoc />
@@ -73,7 +66,7 @@ public class OidcAuthenticationService<TRemoteAuthenticationState> :
         {
             _principal = new ClaimsPrincipal();
 
-            var authentication = await GetAuthenticationAsync(_oidcClient.Options.Scope).ConfigureAwait(false);
+            var authentication = await GetAuthenticationAsync(oidcClient.Options.Scope).ConfigureAwait(false);
 
             if (authentication is not null)
             {
@@ -105,7 +98,7 @@ public class OidcAuthenticationService<TRemoteAuthenticationState> :
             {
                 Expires = authentication?.AccessTokenExpiration ?? DateTimeOffset.MinValue,
                 Value = authentication?.AccessToken,
-                GrantedScopes = options.Scopes.ToArray()
+                GrantedScopes = [.. options.Scopes]
             },
             authentication is null ? _options.Value.AuthenticationPaths.LogInPath : null,
             authentication is null ? new InteractiveRequestOptions
@@ -118,7 +111,7 @@ public class OidcAuthenticationService<TRemoteAuthenticationState> :
     /// <inheritdoc />
     public async Task<RemoteAuthenticationResult<TRemoteAuthenticationState>> SignInAsync(RemoteAuthenticationContext<TRemoteAuthenticationState> context)
     {
-        var result = await _oidcClient.LoginAsync().ConfigureAwait(false);
+        var result = await oidcClient.LoginAsync().ConfigureAwait(false);
         await StoreLoginResultAsync(result).ConfigureAwait(false);
 
         UpdateUser(Task.FromResult(result.User ?? new ClaimsPrincipal()));
@@ -134,11 +127,11 @@ public class OidcAuthenticationService<TRemoteAuthenticationState> :
     /// <inheritdoc />
     public async Task<RemoteAuthenticationResult<TRemoteAuthenticationState>> SignOutAsync(RemoteAuthenticationContext<TRemoteAuthenticationState> context)
     {
-        await Task.Factory.StartNew(() => _oidcClient.LogoutAsync());
+        await Task.Factory.StartNew(() => oidcClient.LogoutAsync());
 
         foreach (var key in _authenticationCache.Keys)
         {
-            _store.Delete(key);
+            store.Delete(key);
         }
         _principal = new ClaimsPrincipal();
         _authenticationCache.Clear();
@@ -176,9 +169,9 @@ public class OidcAuthenticationService<TRemoteAuthenticationState> :
             RefreshToken = result.RefreshToken
         };
 
-        var scope = _oidcClient.Options.Scope;
+        var scope = oidcClient.Options.Scope;
         _authenticationCache[scope] = entity;
-        await _store.SetAsync(scope, entity).ConfigureAwait(false);
+        await store.SetAsync(scope, entity).ConfigureAwait(false);
         _principal = result.User;
 
         return entity;
@@ -188,14 +181,14 @@ public class OidcAuthenticationService<TRemoteAuthenticationState> :
     {
         NotifyAuthenticationStateChanged(UpdateAuthenticationState(task));
 
-        static async Task<AuthenticationState> UpdateAuthenticationState(Task<ClaimsPrincipal> futureUser) => new AuthenticationState(await futureUser);
+        static async Task<AuthenticationState> UpdateAuthenticationState(Task<ClaimsPrincipal> futureUser) => new(await futureUser);
     }
 
     private string GetReturnUrl(string customReturnUrl)
     {
         try
         {
-            return customReturnUrl != null ? _navigation.ToAbsoluteUri(customReturnUrl).AbsoluteUri : _navigation.Uri;
+            return customReturnUrl != null ? navigation.ToAbsoluteUri(customReturnUrl).AbsoluteUri : navigation.Uri;
         }
         catch
         {
@@ -206,22 +199,22 @@ public class OidcAuthenticationService<TRemoteAuthenticationState> :
 
     private async Task<AuthenticationEntity> RefreshTokenAsync(string scope, AuthenticationEntity entity)
     {
-        var defaultEntity = await GetOrAddAuthenticationFromCache(_oidcClient.Options.Scope).ConfigureAwait(false);
+        var defaultEntity = await GetOrAddAuthenticationFromCache(oidcClient.Options.Scope).ConfigureAwait(false);
         if (string.IsNullOrEmpty(defaultEntity?.RefreshToken))
         {
             return null;
         }
 
-        await _oidcClient.PrepareLoginAsync().ConfigureAwait(false);
-        var options = _oidcClient.Options;
-        var client = options.HttpClientFactory(options);
+        await oidcClient.PrepareLoginAsync().ConfigureAwait(false);
+        var oidcOptions = oidcClient.Options;
+        var client = oidcOptions.HttpClientFactory(oidcOptions);
         var result = await client.RequestRefreshTokenAsync(new RefreshTokenRequest
         {
-            Address = options.ProviderInformation.TokenEndpoint,
-            ClientId = options.ClientId,
-            ClientSecret = options.ClientSecret,
-            ClientAssertion = options.ClientAssertion,
-            ClientCredentialStyle = options.TokenClientCredentialStyle,
+            Address = oidcOptions.ProviderInformation.TokenEndpoint,
+            ClientId = oidcOptions.ClientId,
+            ClientSecret = oidcOptions.ClientSecret,
+            ClientAssertion = oidcOptions.ClientAssertion,
+            ClientCredentialStyle = oidcOptions.TokenClientCredentialStyle,
             RefreshToken = defaultEntity.RefreshToken,
             Scope = scope
         }).ConfigureAwait(false);
@@ -232,13 +225,13 @@ public class OidcAuthenticationService<TRemoteAuthenticationState> :
             entity.AccessTokenExpiration = DateTimeOffset.Now.AddSeconds(result.ExpiresIn);
             entity.RefreshToken = result.RefreshToken;
             entity.IdentityToken = result.IdentityToken;
-            await _store.SetAsync(scope, entity).ConfigureAwait(false);
+            await store.SetAsync(scope, entity).ConfigureAwait(false);
             _authenticationCache[scope] = entity;
 
             if (entity != defaultEntity)
             {
                 defaultEntity.RefreshToken = entity.RefreshToken;
-                await _store.SetAsync(_oidcClient.Options.Scope, defaultEntity).ConfigureAwait(false);
+                await store.SetAsync(oidcClient.Options.Scope, defaultEntity).ConfigureAwait(false);
             }
 
             return entity;
@@ -252,7 +245,7 @@ public class OidcAuthenticationService<TRemoteAuthenticationState> :
     {
         var entity = await GetOrAddAuthenticationFromCache(scope).ConfigureAwait(false);
 
-        if (entity is null && scope != _oidcClient.Options.Scope)
+        if (entity is null && scope != oidcClient.Options.Scope)
         {
             // create a new token for a new scope
             return await CreateNewTokenForNewScopeAsync(scope).ConfigureAwait(false);
@@ -268,7 +261,7 @@ public class OidcAuthenticationService<TRemoteAuthenticationState> :
 
     private async Task<AuthenticationEntity> CreateNewTokenForNewScopeAsync(string scope)
     {
-        var entity = await GetOrAddAuthenticationFromCache(_oidcClient.Options.Scope).ConfigureAwait(false);
+        var entity = await GetOrAddAuthenticationFromCache(oidcClient.Options.Scope).ConfigureAwait(false);
         if (entity is null)
         {
             return null;
@@ -278,7 +271,7 @@ public class OidcAuthenticationService<TRemoteAuthenticationState> :
         {
             RefreshToken = entity.RefreshToken,
         }).ConfigureAwait(false);
-        
+
         return entity;
     }
 
@@ -286,11 +279,11 @@ public class OidcAuthenticationService<TRemoteAuthenticationState> :
     {
         if (!_authenticationCache.TryGetValue(scope, out AuthenticationEntity entity))
         {
-            entity = await _store.GetAsync(scope).ConfigureAwait(false);
+            entity = await store.GetAsync(scope).ConfigureAwait(false);
             if (entity is not null)
             {
                 _authenticationCache.Add(scope, entity);
-            }            
+            }
         }
 
         return entity;

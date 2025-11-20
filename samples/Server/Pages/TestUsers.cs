@@ -2,7 +2,7 @@
 // See LICENSE in the project root for license information.
 
 
-using IdentityModel;
+using Duende.IdentityModel;
 using System.Security.Claims;
 using System.Text.Json;
 using Duende.IdentityServer;
@@ -10,7 +10,7 @@ using Duende.IdentityServer.Test;
 
 namespace OidcAndApiServer;
 
-public class TestUsers
+public static class TestUsers
 {
     public static List<TestUser> Users
     {
@@ -24,8 +24,8 @@ public class TestUsers
                 country = "Germany"
             };
                 
-            return new List<TestUser>
-            {
+            return
+            [
                 new TestUser
                 {
                     SubjectId = "1",
@@ -58,7 +58,7 @@ public class TestUsers
                         new Claim(JwtClaimTypes.Address, JsonSerializer.Serialize(address), IdentityServerConstants.ClaimValueTypes.Json)
                     }
                 }
-            };
+            ];
         }
     }
 }

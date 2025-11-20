@@ -1,49 +1,51 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
-    <PropertyGroup>
-        <TargetFrameworks>net9.0;net9.0-android;net9.0-ios;net9.0-maccatalyst</TargetFrameworks>
-        <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.19041.0</TargetFrameworks>
-        <!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
-        <!-- <TargetFrameworks>$(TargetFrameworks);net9.0-tizen</TargetFrameworks> -->
-        <UseMaui>true</UseMaui>
-        <SingleProject>true</SingleProject>
-        <ImplicitUsings>enable</ImplicitUsings>		
-        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
-        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>
-        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
-        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
-        <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
-        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-        <PublishReadyToRun>false</PublishReadyToRun>
-    <Authors>Olivier Lefebvre</Authors>
-    <Description>Simplify OIDC authentication for MAUI Blazor app.</Description>
-    <Copyright>Copyright (c) 2023 @Olivier Lefebvre</Copyright>
-    <PackageProjectUrl>https://github.com/Aguafrommars/Maui.Blazor.Authentication/tree/main/src/Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/Aguafrommars/Maui.Blazor.Authentication</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PackageTags>
-      openid-connect;oidc;openidconnect-client;maui;blazor;maui-blazor;auhtentication</PackageTags>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PackageIcon>package-icon.png</PackageIcon>
-    <Title>Maui.Blazor.Authentication</Title>
-    <GenerateDocumentationFile>True</GenerateDocumentationFile>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>net10.0;net10.0-android;net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
+		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
+		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
+		<!-- <TargetFrameworks>$(TargetFrameworks);net10.0-tizen</TargetFrameworks> -->
+		<UseMaui>true</UseMaui>
+		<SingleProject>true</SingleProject>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
+		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PublishReadyToRun>false</PublishReadyToRun>
+		<Authors>Olivier Lefebvre</Authors>
+		<Description>Simplify OIDC authentication for MAUI Blazor app.</Description>
+		<Copyright>Copyright (c) 2023 @Olivier Lefebvre</Copyright>
+		<PackageProjectUrl>https://github.com/Aguafrommars/Maui.Blazor.Authentication/tree/main/src/Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/Aguafrommars/Maui.Blazor.Authentication</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageTags>
+			openid-connect;oidc;openidconnect-client;maui;blazor;maui-blazor;auhtentication
+		</PackageTags>
+		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+		<PackageIcon>package-icon.png</PackageIcon>
+		<Title>Maui.Blazor.Authentication</Title>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	</PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="IdentityModel.OidcClient" Version="6.0.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="9.0.10" />
-        <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.10" />
-        <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.120" />
-        <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.120" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="9.0.120" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.10" />
-      </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="IdentityModel.OidcClient" Version="6.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="9.0.10" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="9.0.10" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.120" />
+		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.120" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="9.0.120" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.10" />
+	</ItemGroup>
 
-    <ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath="\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="package-icon.png" Pack="true" PackagePath="" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="package-icon.png" Pack="true" PackagePath="" />
+	</ItemGroup>
 </Project>
