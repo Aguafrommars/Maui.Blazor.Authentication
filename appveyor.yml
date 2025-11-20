@@ -24,6 +24,7 @@ install:
   - ps: dotnet tool install --global dotnet-sonarscanner
   - ps: .\dotnet-install.ps1 -Version $env:donetsdk
   - cmd: nuget install ReportGenerator -ExcludeVersion  
+  - cmd: %ANDROID_HOME%/tools/bin/sdkmanager --licenses
   - ps: ./appveyorinit.ps1
 build_script:
   - ps: ./build.ps1
