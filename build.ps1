@@ -26,7 +26,7 @@ if ($env:CI -And ((-Not $env:APPVEYOR_PULL_REQUEST_NUMBER) -Or ($env:APPVEYOR_PU
 
 Write-Host "dotnet test test\Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Test\Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Test.csproj -c Release --settings coverletArgs.runsettings  -v q"
 
-dotnet test -c Release --collect:"XPlat Code Coverage" --settings coverletArgs.runsettings -v q 
+dotnet test test\Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Test\Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Test.csproj -c Release --no-build --collect:"XPlat Code Coverage" --settings coverletArgs.runsettings -v q 
 
 if ($LASTEXITCODE -ne 0) {
 	$result = $LASTEXITCODE
