@@ -7,7 +7,9 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using System.Diagnostics.CodeAnalysis;
 
+#pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace Microsoft.Extensions.DependencyInjection;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 
 /// <summary>
 /// Contains extension methods to add authentication to Maui Blazor applications.
@@ -36,7 +38,10 @@ public static class ServiceCollectionExtensions
     /// <param name="configure">An action that will configure the <see cref="RemoteAuthenticationOptions{TProviderOptions}"/>.</param>
     /// <param name="getHttpMessageHandler">A function that will return an <see cref="HttpMessageHandler"/>.</param>
     /// <returns>The <see cref="IServiceCollection"/> where the services were registered.</returns>
-    public static IRemoteAuthenticationBuilder<TRemoteAuthenticationState, RemoteUserAccount> AddMauiOidcAuthentication<TRemoteAuthenticationState>(
+    public static IRemoteAuthenticationBuilder<TRemoteAuthenticationState, RemoteUserAccount> AddMauiOidcAuthentication<[DynamicallyAccessedMembers(
+        DynamicallyAccessedMemberTypes.PublicConstructors |
+        DynamicallyAccessedMemberTypes.PublicFields |
+        DynamicallyAccessedMemberTypes.PublicProperties)] TRemoteAuthenticationState>(
         this IServiceCollection services, Action<RemoteAuthenticationOptions<OidcProviderOptions>> configure,
         Func<IServiceProvider, HttpMessageHandler> getHttpMessageHandler = null)
         where TRemoteAuthenticationState : RemoteAuthenticationState, new()
