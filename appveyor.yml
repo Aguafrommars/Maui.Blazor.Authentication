@@ -23,20 +23,8 @@ install:
   - ps: dotnet gitversion /l console /output buildserver
   - ps: dotnet tool install --global dotnet-sonarscanner
   - ps: .\dotnet-install.ps1 -Version $env:donetsdk
-  - cmd: nuget install ReportGenerator -ExcludeVersion
-  - ps: |
-      Invoke-WebRequest https://dl.google.com/android/repository/commandlinetools-win-11076708_latest.zip -OutFile cmdline-tools.zip
-      Expand-Archive cmdline-tools.zip -DestinationPath C:\Android\
-      mkdir C:\Android\cmdline-tools\latest
-      Move-Item C:\Android\cmdline-tools\* C:\Android\cmdline-tools\latest\ -For
-  - setx ANDROID_HOME "C:\Android"
-  - setx ANDROID_SDK_ROOT "C:\Android"
-  - setx PATH "%PATH%;C:\Android\cmdline-tools\latest\bin;C:\Android\platform-tools"
+  - cmd: nuget install ReportGenerator -ExcludeVersion  
   - ps: ./appveyorinit.ps1
-before_build:
-  - cmd: C:\Android\cmdline-tools\latest\bin\sdkmanager.bat --list
-  - cmd: yes | C:\Android\cmdline-tools\latest\bin\sdkmanager.bat --licenses
-  - cmd: C:\Android\cmdline-tools\latest\bin\sdkmanager.bat "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 build_script:
   - ps: ./build.ps1
 test_script:
