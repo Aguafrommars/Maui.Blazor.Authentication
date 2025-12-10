@@ -1,6 +1,5 @@
 ﻿using Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Services;
-using IdentityModel.OidcClient.Browser;
-using Microsoft.Maui.Authentication;
+using Duende.IdentityModel.OidcClient.Browser;
 using Moq;
 
 namespace Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Test.Services;
