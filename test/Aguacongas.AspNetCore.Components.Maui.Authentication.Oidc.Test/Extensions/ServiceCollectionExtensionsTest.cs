@@ -1,7 +1,7 @@
 ﻿using Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Abstraction;
 using Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Services;
 using Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Test.Utils;
-using IdentityModel.OidcClient;
+using Duende.IdentityModel.OidcClient;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;

@@ -22,7 +22,7 @@ namespace WinUIEx;
 /// Protocol declaration and add the scheme you registered for your application's oauth redirect url under "Name".
 /// </para>
 /// </remarks>
-internal sealed class WebAuthenticator: IWebAuthenticator
+internal sealed class WebAuthenticator : IWebAuthenticator
 {
     /// <summary>
     /// Singleton instance of <see cref="WebAuthenticator"/>
@@ -73,7 +73,7 @@ internal sealed class WebAuthenticator: IWebAuthenticator
         {
             return;
         }
-            
+
         var state = GetState(activatedEventArgs);
         if (state["appInstanceId"] is string id && state["signinId"] is string signinId && !string.IsNullOrEmpty(signinId))
         {
@@ -217,4 +217,7 @@ internal sealed class WebAuthenticator: IWebAuthenticator
         var uri = await tcs.Task.ConfigureAwait(false);
         return new WebAuthenticatorResult(uri);
     }
+
+    public Task<WebAuthenticatorResult> AuthenticateAsync(WebAuthenticatorOptions webAuthenticatorOptions, CancellationToken cancellationToken)
+    => AuthenticateAsync(webAuthenticatorOptions.Url, webAuthenticatorOptions.CallbackUrl);
 }

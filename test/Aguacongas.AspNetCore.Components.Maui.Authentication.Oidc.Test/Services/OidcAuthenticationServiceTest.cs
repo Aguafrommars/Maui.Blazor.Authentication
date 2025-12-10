@@ -3,14 +3,14 @@ using Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Models;
 using Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Services;
 using Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Test.Utils;
 using Ch.Sien.PwdManagement.Front.Test;
-using IdentityModel.Client;
-using IdentityModel.OidcClient;
-using IdentityModel.OidcClient.Browser;
+using Duende.IdentityModel.Client;
+using Duende.IdentityModel.OidcClient;
+using Duende.IdentityModel.OidcClient.Browser;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.Extensions.Options;
 using Moq;
 using System.Net.Http.Headers;
-using IBrowser = IdentityModel.OidcClient.Browser.IBrowser;
+using IBrowser = Duende.IdentityModel.OidcClient.Browser.IBrowser;
 
 namespace Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Test.Services;
 
