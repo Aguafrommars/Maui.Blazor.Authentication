@@ -3,14 +3,14 @@ using Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Models;
 using Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Services;
 using Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Test.Utils;
 using Ch.Sien.PwdManagement.Front.Test;
-using IdentityModel.Client;
-using IdentityModel.OidcClient;
-using IdentityModel.OidcClient.Browser;
-using Microsoft.AspNetCore.Components;
+using Duende.IdentityModel.Client;
+using Duende.IdentityModel.OidcClient;
+using Duende.IdentityModel.OidcClient.Browser;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.Extensions.Options;
 using Moq;
-using IBrowser = IdentityModel.OidcClient.Browser.IBrowser;
+using System.Net.Http.Headers;
+using IBrowser = Duende.IdentityModel.OidcClient.Browser.IBrowser;
 
 namespace Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Test.Services;
 
@@ -72,7 +72,7 @@ public class OidcAuthenticationServiceTest
                             }),
                             "https://exemple.com/connect/userinfo" => Task.FromResult(new HttpResponseMessage
                             {
-                                Content = new StringContent(File.ReadAllText("userinfo.json"))
+                                Content = new StringContent(File.ReadAllText("userinfo.json"), new MediaTypeHeaderValue("application/json"))
                             }),
                             _ => throw new InvalidOperationException($"Uri unknow {r.RequestUri}"),
                         };
@@ -116,14 +116,14 @@ public class OidcAuthenticationServiceTest
         {
             AccessTokenExpiration = DateTimeOffset.UtcNow.AddMinutes(-10),
             RefreshToken = Guid.NewGuid().ToString(),
-            Claims = new[]
-            {
+            Claims =
+            [
                 new ClaimEntity
                 {
                     Type = "name",
                     Value = "test"
                 }
-            },
+            ],
             AuthenticationType = "Bearer",
             NameClaimType = "name",
         });
@@ -157,7 +157,7 @@ public class OidcAuthenticationServiceTest
                             }),
                             "https://exemple.com/connect/userinfo" => Task.FromResult(new HttpResponseMessage
                             {
-                                Content = new StringContent(File.ReadAllText("userinfo.json"))
+                                Content = new StringContent(File.ReadAllText("userinfo.json"), new MediaTypeHeaderValue("application/json")),
                             }),
                             _ => throw new InvalidOperationException($"Uri unknow {r.RequestUri}"),
                         };
@@ -194,14 +194,14 @@ public class OidcAuthenticationServiceTest
         {
             AccessTokenExpiration = DateTimeOffset.UtcNow.AddMinutes(-10),
             RefreshToken = Guid.NewGuid().ToString(),
-            Claims = new[]
-            {
+            Claims =
+            [
                 new ClaimEntity
                 {
                     Type = "name",
                     Value = "test"
                 }
-            },
+            ],
             AuthenticationType = "Bearer",
             NameClaimType = "name",
         });
@@ -235,7 +235,7 @@ public class OidcAuthenticationServiceTest
                             }),
                             "https://exemple.com/connect/userinfo" => Task.FromResult(new HttpResponseMessage
                             {
-                                Content = new StringContent(File.ReadAllText("userinfo.json"))
+                                Content = new StringContent(File.ReadAllText("userinfo.json"), new MediaTypeHeaderValue("application/json"))
                             }),
                             _ => throw new InvalidOperationException($"Uri unknow {r.RequestUri}"),
                         };
@@ -296,7 +296,7 @@ public class OidcAuthenticationServiceTest
                             }),
                             "https://exemple.com/connect/userinfo" => Task.FromResult(new HttpResponseMessage
                             {
-                                Content = new StringContent(File.ReadAllText("userinfo.json"))
+                                Content = new StringContent(File.ReadAllText("userinfo.json"), new MediaTypeHeaderValue("application/json"))
                             }),
                             _ => throw new InvalidOperationException($"Uri unknow {r.RequestUri}"),
                         };
@@ -314,10 +314,10 @@ public class OidcAuthenticationServiceTest
 
         var result = await sut.RequestAccessToken(new AccessTokenRequestOptions
         {
-            Scopes = new[]
-            {
+            Scopes =
+            [
                 "api"
-            }
+            ]
         });
         Assert.Equal(AccessTokenResultStatus.Success, result.Status);
     }
@@ -364,7 +364,7 @@ public class OidcAuthenticationServiceTest
                             }),
                             "https://exemple.com/connect/userinfo" => Task.FromResult(new HttpResponseMessage
                             {
-                                Content = new StringContent(File.ReadAllText("userinfo.json"))
+                                Content = new StringContent(File.ReadAllText("userinfo.json"), new MediaTypeHeaderValue("application/json"))
                             }),
                             _ => throw new InvalidOperationException($"Uri unknow {r.RequestUri}"),
                         };
@@ -390,13 +390,13 @@ public class OidcAuthenticationServiceTest
         var segments = uri.Query.Split('&').Select(s => s.Split('='));
         var state = segments.FirstOrDefault(s => s[0] == "state");
         return new RequestUrl("test://authentication/login-callback")
-            .Create(new Parameters(new Dictionary<string, string?>
+            .Create([.. new Dictionary<string, string>
             {
                 ["code"] = Guid.NewGuid().ToString(),
                 ["scope"] = "openid profile",
-                ["state"] = state?[1],
+                ["state"] = state![1],
                 ["session_state"] = "F8Qy-cRhrMwSZUVFel4_naUkx6mHilfp0JoU0mtWdto.4D291D31B765485F0FC7151A09211010",
                 ["iss"] = "https://exemple.com"
-            }));
+            }]);
     }
 }

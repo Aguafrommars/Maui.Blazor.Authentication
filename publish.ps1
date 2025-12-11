@@ -5,4 +5,4 @@ if ($env:APPVEYOR -and $env:APPVEYOR_PULL_REQUEST_NUMBER) {
 $fileversion = "$env:SemVer.0"
 $path = (Get-Location).Path
 
-dotnet pack -c Release -o $path\artifacts\build -p:Version=$env:Version -p:FileVersion=$fileversion
+dotnet pack src\Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc\Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.csproj -c Release -o $path\artifacts\build -p:Version=$env:Version -p:FileVersion=$fileversion

@@ -1,11 +1,13 @@
-﻿namespace Maui.Blazor.Client;
+﻿
+namespace Maui.Blazor.Client;
 
 public partial class App : Application
 {
 	public App()
 	{
 		InitializeComponent();
-
-		MainPage = new MainPage();
 	}
+
+    protected override Window CreateWindow(IActivationState activationState)
+    => new Window(new MainPage()) { Title = "Maui.Blazor.Client" };    
 }

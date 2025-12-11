@@ -12,18 +12,18 @@ image:
 environment:
   GH_TOKEN: 
     secure: /o9VAhx5ewGmdLR9qcgFJMzBaCuzOmGlsXAHu7khUJLdQzsv4gJzLUfYDghcRPHd
-  donetsdk: 8.0.100
-  JAVA_HOME: C:\Program Files\Java\jdk19
+  donetsdk: 10.0.100
+  JAVA_HOME: C:\Program Files\Java\jdk21
   PATH: $(JAVA_HOME)\bin;$(PATH)
 init:
   - cmd: git config --global core.autocrlf true
 install:
-  - ps: Install-Product node 18 x64
+  - ps: Install-Product node 20 x64
   - ps: dotnet tool install --global GitVersion.Tool
   - ps: dotnet gitversion /l console /output buildserver
-  - ps: .\dotnet-install.ps1 -Version $env:donetsdk
   - ps: dotnet tool install --global dotnet-sonarscanner
-  - cmd: nuget install ReportGenerator -ExcludeVersion
+  - ps: .\dotnet-install.ps1 -Version $env:donetsdk
+  - cmd: nuget install ReportGenerator -ExcludeVersion  
   - ps: ./appveyorinit.ps1
 build_script:
   - ps: ./build.ps1
@@ -35,7 +35,7 @@ artifacts:
 deploy:
   - provider: NuGet
     api_key:
-      secure: L5Ol2yiygLW8nUF6j5/rwx4feonMPly+S69GjoX1ilEUklPMixlX5RW2l8FJScNK
+      secure: IvRjdQGkzrRwGoVkIOi82WddV/UwEm3t0IIhUkL4Ju3PyPRdDMOgAeHLuSmnPLcM
     on:
       branch: 
       - /preview\/*/

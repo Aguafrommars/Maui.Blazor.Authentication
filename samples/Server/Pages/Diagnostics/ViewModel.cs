@@ -2,8 +2,8 @@
 // See LICENSE in the project root for license information.
 
 
-using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
+using System.Buffers.Text;
 using System.Text;
 using System.Text.Json;
 
@@ -15,10 +15,9 @@ public class ViewModel
     {
         AuthenticateResult = result;
 
-        if (result.Properties.Items.ContainsKey("client_list"))
+        if (result.Properties.Items.TryGetValue("client_list", out string encoded))
         {
-            var encoded = result.Properties.Items["client_list"];
-            var bytes = Base64Url.Decode(encoded);
+            var bytes = Base64Url.DecodeFromChars(encoded);
             var value = Encoding.UTF8.GetString(bytes);
 
             Clients = JsonSerializer.Deserialize<string[]>(value);
@@ -26,5 +25,5 @@ public class ViewModel
     }
 
     public AuthenticateResult AuthenticateResult { get; }
-    public IEnumerable<string> Clients { get; } = new List<string>();
+    public IEnumerable<string> Clients { get; } = [];
 }
