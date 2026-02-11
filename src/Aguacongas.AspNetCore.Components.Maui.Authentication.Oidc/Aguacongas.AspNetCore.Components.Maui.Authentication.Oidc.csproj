@@ -33,10 +33,10 @@
 
 	<ItemGroup>
 		<PackageReference Include="Duende.IdentityModel.OidcClient" Version="7.0.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="10.0.2" />
-		<PackageReference Include="Microsoft.Extensions.Http" Version="10.0.2" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="10.0.3" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="10.0.3" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.31" />   
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.2" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.3" />
 	</ItemGroup>
 
 	<ItemGroup>
