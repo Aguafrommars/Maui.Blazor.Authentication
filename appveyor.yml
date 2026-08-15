@@ -8,7 +8,7 @@ branches:
   - /preview\/*/ 
   - /release\/*/
 image: 
-- Visual Studio 2022
+- Visual Studio 2026
 environment:
   GH_TOKEN: 
     secure: /o9VAhx5ewGmdLR9qcgFJMzBaCuzOmGlsXAHu7khUJLdQzsv4gJzLUfYDghcRPHd
