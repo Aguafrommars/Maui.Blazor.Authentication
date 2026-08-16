@@ -10,6 +10,11 @@ branches:
 image: 
 - Visual Studio 2022
 environment:
+  IGNORE_NORMALISATION_GIT_HEAD_MOVE: 1
+  sonarqube:
+    secure: S0mfxWqFjzcVQK1D6f7TQ1Qoyh1UmrCA15S65CWe21VNIPsIXGdP6xld8LnK4a7b
+  nuget:
+    secure: L5Ol2yiygLW8nUF6j5/rwx4feonMPly+S69GjoX1ilEUklPMixlX5RW2l8FJScNK
   GH_TOKEN: 
     secure: /o9VAhx5ewGmdLR9qcgFJMzBaCuzOmGlsXAHu7khUJLdQzsv4gJzLUfYDghcRPHd
   donetsdk: 10.0.400
