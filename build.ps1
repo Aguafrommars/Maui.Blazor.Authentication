@@ -24,7 +24,7 @@ if ($env:CI -And ((-Not $env:APPVEYOR_PULL_REQUEST_NUMBER) -Or ($env:APPVEYOR_PU
 	dotnet sonarscanner begin /k:Aguafrommars_Maui.Blazor.Authentication -o:aguafrommars -d:sonar.host.url=https://sonarcloud.io -d:sonar.token=$env:sonarqube -d:sonar.coverageReportPaths=coverage\SonarQube.xml $prArgs -v:$env:Version
 }
 
-Write-Host "dotnet test -c Release --collect:"XPlat Code Coverage" --settings coverletArgs.runsettings -v q"
+Write-Host "dotnet test -c Release --coverage --coverage-output-format cobertura -v q"
 dotnet test -c Release --coverage --coverage-output-format cobertura -v q
 
 if ($LASTEXITCODE -ne 0) {
