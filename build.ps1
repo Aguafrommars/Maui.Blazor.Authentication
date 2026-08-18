@@ -25,7 +25,7 @@ if ($env:CI -And ((-Not $env:APPVEYOR_PULL_REQUEST_NUMBER) -Or ($env:APPVEYOR_PU
 }
 
 Write-Host "dotnet test -c Release --coverage --coverage-output-format cobertura -v q"
-dotnet test -c Release --coverage --coverage-output-format cobertura -v q
+dotnet test --project .\test\Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Test\Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Test.csproj -c Release --coverage --coverage-output-format cobertura -v q
 
 if ($LASTEXITCODE -ne 0) {
 	$result = $LASTEXITCODE
