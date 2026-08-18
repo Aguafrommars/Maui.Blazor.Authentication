@@ -10,9 +10,14 @@ branches:
 image: 
 - Visual Studio 2022
 environment:
+  IGNORE_NORMALISATION_GIT_HEAD_MOVE: 1
+  sonarqube:
+    secure: S0mfxWqFjzcVQK1D6f7TQ1Qoyh1UmrCA15S65CWe21VNIPsIXGdP6xld8LnK4a7b
+  nuget:
+    secure: L5Ol2yiygLW8nUF6j5/rwx4feonMPly+S69GjoX1ilEUklPMixlX5RW2l8FJScNK
   GH_TOKEN: 
     secure: /o9VAhx5ewGmdLR9qcgFJMzBaCuzOmGlsXAHu7khUJLdQzsv4gJzLUfYDghcRPHd
-  donetsdk: 10.0.100
+  donetsdk: 10.0.400
   JAVA_HOME: C:\Program Files\Java\jdk21
   PATH: $(JAVA_HOME)\bin;$(PATH)
 init:
@@ -22,7 +27,7 @@ install:
   - ps: dotnet tool install --global GitVersion.Tool
   - ps: dotnet gitversion /l console /output buildserver
   - ps: dotnet tool install --global dotnet-sonarscanner
-  - ps: .\dotnet-install.ps1 -Version $env:donetsdk
+  - ps: .\dotnet-install.ps1
   - cmd: nuget install ReportGenerator -ExcludeVersion  
   - ps: ./appveyorinit.ps1
 build_script:
