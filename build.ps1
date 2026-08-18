@@ -24,6 +24,9 @@ if ($env:CI -And ((-Not $env:APPVEYOR_PULL_REQUEST_NUMBER) -Or ($env:APPVEYOR_PU
 	dotnet sonarscanner begin /k:Aguafrommars_Maui.Blazor.Authentication -o:aguafrommars -d:sonar.host.url=https://sonarcloud.io -d:sonar.token=$env:sonarqube -d:sonar.coverageReportPaths=coverage\SonarQube.xml $prArgs -v:$env:Version
 }
 
+Write-Host "dotnet build src\Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc\Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.csproj -c Release -t:InstallAndroidDependencies -f net10.0-android ""-p:AndroidSdkDirectory=C:\Program Files (x86)\Android\android-sdk"" -p:AcceptAndroidSdkLicenses=True"
+dotnet build src\Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc\Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.csproj -c Release -t:InstallAndroidDependencies -f net10.0-android "-p:AndroidSdkDirectory=C:\Program Files (x86)\Android\android-sdk" -p:AcceptAndroidSdkLicenses=True
+
 Write-Host "dotnet test -c Release --coverage --coverage-output-format cobertura -v q"
 dotnet test --project .\test\Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Test\Aguacongas.AspNetCore.Components.Maui.Authentication.Oidc.Test.csproj -c Release --coverage --coverage-output-format cobertura -v q
 
